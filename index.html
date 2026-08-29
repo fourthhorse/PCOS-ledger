@@ -1,492 +1,108 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#111111">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#111">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
 <title>PCOS Ledger</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
-*{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#111}
-.app{max-width:760px;margin:auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom))}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-h1{font-size:29px;margin:0}.sub{color:#707070;font-size:14px;margin-top:2px}
-.card{background:#fff;border-radius:18px;padding:17px;margin:11px 0;box-shadow:0 1px 4px #0001}
-.balance{text-align:center;padding:22px 16px}.eyebrow{font-size:12px;letter-spacing:.08em;color:#777;font-weight:700}
-.big{font-size:40px;font-weight:800;margin:5px 0}.secondary{color:#666}
-nav{position:sticky;top:0;z-index:3;background:#f5f5f7;padding:5px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-button{border:0;border-radius:12px;padding:11px 10px;font:inherit;background:#e9e9ee;cursor:pointer}
-button.primary{background:#111;color:white;font-weight:700}.accent{background:#eef6ff;color:#135ba1;font-weight:700}.primary .small{opacity:.85}.settle{background:#e9f7ed;color:#176b35;font-weight:700}.confirm{background:#fff4d6;color:#7a5200;font-weight:700}.selected{background:#111;color:#fff}
-button.danger{background:#fbe4e4;color:#a30000}.fab{width:100%;font-size:17px;margin:4px 0 14px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{padding:15px;border-radius:14px;background:#f7f7f8}
-.stat b{font-size:22px;display:block;margin-top:3px}
-.row{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #eee}.row:last-child{border-bottom:0}
-.name{font-weight:700}.muted{color:#777}.small{font-size:12px}.pos{color:#087a35;font-weight:700}.neg{color:#b42318;font-weight:700}
-label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{width:100%;font:inherit;padding:12px;border:1px solid #d1d1d6;border-radius:11px;background:#fff}textarea{min-height:75px}
-.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.actions{display:flex;gap:8px;margin-top:15px}.actions button{flex:1}
-.filter{display:grid;grid-template-columns:1fr 1fr;gap:8px}.empty{text-align:center;color:#777;padding:24px 10px}
-.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:flex-end;z-index:10}.sheet{background:#fff;width:100%;max-width:760px;margin:auto;border-radius:22px 22px 0 0;padding:18px;max-height:90vh;overflow:auto}
-.hidden{display:none!important}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eee;font-size:12px}
-.footer{color:#888;text-align:center;font-size:11px;margin-top:18px}
+*{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#111}.app{max-width:760px;margin:auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}h1{font-size:29px;margin:0}.sub{color:#707070;font-size:14px}
+.card{background:#fff;border-radius:18px;padding:17px;margin:11px 0;box-shadow:0 1px 4px #0001}.balance{text-align:center;padding:22px 16px}.eyebrow{font-size:12px;letter-spacing:.08em;color:#777;font-weight:700}.big{font-size:40px;font-weight:800;margin:5px 0}.secondary{color:#666}
+.appnav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:5px 0;position:sticky;top:0;z-index:3;background:#f5f5f7}.appnav button{min-height:42px}
+button{border:0;border-radius:12px;padding:11px 10px;font:inherit;background:#e9e9ee;cursor:pointer}.primary{background:#111;color:#fff;font-weight:700}.accent{background:#eef6ff;color:#135ba1;font-weight:700}.selected{background:#111;color:#fff}.danger{background:#fbe4e4;color:#a30000}.fab{width:100%;font-size:17px;margin:4px 0 14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{padding:15px;border-radius:14px;background:#f7f7f8}.stat b{font-size:22px;display:block;margin-top:3px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #eee}.row:last-child{border-bottom:0}.name{font-weight:700}.muted{color:#777}.small{font-size:12px}.pos{color:#087a35;font-weight:700}.neg{color:#b42318;font-weight:700}
+label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{width:100%;font:inherit;padding:12px;border:1px solid #d1d1d6;border-radius:11px;background:#fff}textarea{min-height:75px}.actions{display:flex;gap:8px;margin-top:15px}.actions button{flex:1}
+.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:flex-end;z-index:20}.sheet{background:#fff;width:100%;max-width:760px;margin:auto;border-radius:22px 22px 0 0;padding:18px;max-height:90vh;overflow:auto}.hidden{display:none!important}
+.searchPanel{position:fixed;inset:0;width:100vw;height:100dvh;background:#f5f5f7;z-index:1000;padding:calc(14px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom));overflow:auto}.searchTop{display:flex;gap:8px;position:sticky;top:0;background:#f5f5f7;padding-bottom:10px}.searchTop input{margin:0}.searchResult{padding:14px 8px;border-bottom:1px solid #ddd;min-height:54px}.inputLike{width:100%;text-align:left;background:#fff;border:1px solid #d1d1d6;border-radius:11px;padding:12px;min-height:46px}
+.empty{text-align:center;color:#777;padding:24px 10px}
 @media(min-width:600px){.modal{align-items:center}.sheet{border-radius:20px}}
-
-.install{background:#111;color:#fff;border-radius:14px;padding:12px;margin:10px 0;font-weight:700}
-.toast{position:fixed;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));background:#111;color:#fff;padding:13px 16px;border-radius:14px;z-index:20;text-align:center;box-shadow:0 4px 18px #0004}
-.balanceTap{cursor:pointer}
-<style>
-.searchPanel{position:fixed;inset:0;width:100%;height:100%;box-sizing:border-box;background:#f5f5f7;z-index:10000;padding:calc(16px + env(safe-area-inset-top)) 16px 24px;overflow:auto}
-.searchPanel .top{display:flex;gap:8px;align-items:center;position:sticky;top:0;background:#f5f5f7;padding-bottom:12px}
-.searchPanel input{margin:0}
-.searchResult{padding:14px 8px;border-bottom:1px solid #ddd;cursor:pointer}
-.searchResult:active{background:#e8e8ea}
-.bigAction{font-size:17px;padding:16px!important;border-radius:14px!important}
-.statGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.statCard{padding:14px;border-radius:14px;background:#f1f1f3}
-.searchPanel{box-sizing:border-box;width:100vw;height:100dvh;padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:calc(20px + env(safe-area-inset-bottom))}.searchPanel .top{z-index:2}.searchResult{min-height:54px;box-sizing:border-box}
-<style>
-/* V12 fixed: scoped refinements only */
-.app .actions button{min-height:44px}
-.app .inputLike{min-height:44px}
-.app .searchResult{min-height:52px}
-</style></style></style>
-</head>
-<body>
-<div class="app">
+</style></head><body><div class="app">
 <header><div><h1>PCOS Ledger</h1><div class="sub">Part Change of Shift tracker</div></div><button onclick="openSettings()">⚙︎</button></header>
-
-<div id="installHint" class="install hidden">Tip: in Safari, use Share → Add to Home Screen to install PCOS Ledger.</div>
-<nav>
-<button onclick="show('home')" id="nhome">Balance</button>
-<button onclick="show('history')" id="nhistory">PCOS</button>
-<button onclick="show('people')" id="npeople">People</button>
-<button onclick="show('reports')" id="nreports">Reports</button>
-</nav>
+<div class="appnav" aria-label="Main navigation"><button id="nhome" onclick="showPage('home')">Balance</button><button id="nhistory" onclick="showPage('history')">PCOS</button><button id="npeople" onclick="showPage('people')">People</button><button id="nreports" onclick="showPage('reports')">Reports</button></div>
 
 <section id="home" class="page">
 <div class="card balance"><div class="eyebrow">MY NET BALANCE</div><div id="net" class="big">0 hrs</div><div id="netShift" class="secondary">0 shifts</div></div>
-<div class="grid2">
-<div class="stat"><div class="muted small">THEY OWE ME</div><b id="owed">0 hrs</b></div>
-<div class="stat"><div class="muted small">I OWE THEM</div><b id="owe">0 hrs</b></div>
-</div>
+<div class="grid2"><div class="stat"><div class="muted small">THEY OWE ME</div><b id="owed">0 hrs</b></div><div class="stat"><div class="muted small">I OWE THEM</div><b id="owe">0 hrs</b></div></div>
 <button class="primary fab" onclick="openTx()">＋ Add PCOS</button>
 <div class="card"><h3>Outstanding balances</h3><div id="outstanding"></div></div>
-<div class="card"><h3>Recent PCOS</h3><div id="recent"></div></div>
-</section>
+<div class="card"><h3>Recent PCOS</h3><div id="recent"></div></div></section>
 
-<section id="history" class="page hidden">
-<div class="card"><input id="q" placeholder="Search firefighter, station or notes" oninput="render()"><div class="filter" style="margin-top:9px"><input id="from" type="date" onchange="render()"><input id="to" type="date" onchange="render()"></div>
-<div class="actions"><button onclick="clearFilters()">Clear filters</button><button onclick="setThisYear()">This year</button></div></div>
-<div class="card"><div id="historyList"></div></div>
-</section>
+<section id="history" class="page hidden"><div class="card"><input id="q" placeholder="Search firefighter, station or notes" oninput="render()"><div class="actions"><input id="from" type="date" onchange="render()"><input id="to" type="date" onchange="render()"></div><div class="actions"><button onclick="clearFilters()">Clear filters</button><button onclick="setThisYear()">This year</button></div></div><div class="card"><div id="historyList"></div></div></section>
 
-<section id="people" class="page hidden">
-<div class="card"><h3>Firefighters</h3><div id="peopleList"></div></div>
-<button class="primary fab" onclick="openPerson()">＋ Add firefighter</button>
-</section>
+<section id="people" class="page hidden"><div class="card"><h3>Firefighters</h3><div id="peopleList"></div></div><button class="primary fab" onclick="openPerson()">＋ Add firefighter</button></section>
 
-<section id="reports" class="page hidden">
-<div class="card"><label>Report year</label><select id="reportYear" onchange="render()"></select></div><div class="card"><h3>PCOS Summary</h3><div id="reportSubtitle" class="small muted"></div><div class="grid2">
-<div class="stat"><div class="muted small">TRANSACTIONS</div><b id="rCount">0</b></div>
-<div class="stat"><div class="muted small">NET HOURS</div><b id="rNet">0</b></div>
-<div class="stat"><div class="muted small">YOU WORKED</div><b id="rYou">0</b></div>
-<div class="stat"><div class="muted small">THEY WORKED</div><b id="rThem">0</b></div>
-</div></div>
-<div class="card"><h3>By firefighter</h3><div id="reportPeople"></div></div>
-<div class="card"><h3>Data</h3><div class="actions"><button onclick="exportCSV()">Export CSV</button><button onclick="exportJSON()">Backup</button></div><label>Restore backup</label><input type="file" accept=".json,application/json" onchange="importJSON(event)"></div>
-</section>
+<section id="reports" class="page hidden"><div class="card"><label>Report year</label><select id="reportYear" onchange="render()"></select></div><div class="card"><h3>PCOS Summary</h3><div id="reportSubtitle" class="small muted"></div><div class="grid2"><div class="stat"><div class="muted small">TRANSACTIONS</div><b id="rCount">0</b></div><div class="stat"><div class="muted small">NET HOURS</div><b id="rNet">0</b></div><div class="stat"><div class="muted small">YOU WORKED</div><b id="rYou">0</b></div><div class="stat"><div class="muted small">THEY WORKED</div><b id="rThem">0</b></div></div></div><div class="card"><h3>By firefighter</h3><div id="reportPeople"></div></div><div class="card"><h3>Data</h3><div class="actions"><button onclick="exportCSV()">Export CSV</button><button onclick="exportJSON()">Backup</button></div><label>Restore backup</label><input type="file" accept=".json,application/json" onchange="importJSON(event)"></div></section>
 
-<div id="modal" class="modal hidden"><div class="sheet">
-<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="modalTitle">Add PCOS</h2><button onclick="closeModal()">✕</button></div>
-<div id="txForm">
-<label>Firefighter</label>
-<div style="display:flex;gap:8px"><button type="button" id="personButton" class="inputLike" onclick="openPersonPicker()" style="flex:1;text-align:left">Search firefighter…</button><button class="accent" onclick="addPersonFromTx()">＋ New</button></div>
-<select id="person" class="hidden"></select>
-<label>Date</label><input id="date" type="date">
-<label>Location / Station</label>
-<button type="button" id="stationButton" class="inputLike" onclick="openStationPicker('tx')" style="width:100%;text-align:left">Search station…</button>
-<input id="station" type="hidden">
+<div id="modal" class="modal hidden"><div class="sheet"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="modalTitle">Add PCOS</h2><button onclick="closeModal()">✕</button></div>
+<div id="txForm"><label>Firefighter</label><div style="display:flex;gap:8px"><button type="button" id="personButton" class="inputLike" onclick="openPersonPicker()" style="flex:1">Search firefighter…</button><button class="accent" onclick="addPersonFromTx()">＋ New</button></div><select id="person" class="hidden"></select>
+<label>Date</label><input id="date" type="date"><label>Location / Station</label><button type="button" id="stationButton" class="inputLike" onclick="openStationPicker('tx')">Search station…</button><input id="station" type="hidden">
 <label>Who worked the shift?</label><div class="actions"><button id="youBtn" class="selected" onclick="setDir('you')">You worked</button><button id="themBtn" onclick="setDir('them')">They worked</button></div>
-<label>Hours</label>
-<div class="grid2">
-<button class="primary" onclick="setHours(24)">1 SHIFT<br><span class="small">24 hours</span></button>
-<button class="accent" onclick="focusCustomHours()">CUSTOM HOURS</button>
-</div>
-<input id="hours" type="number" min=".25" step=".25" value="24" style="margin-top:8px" oninput="updateHoursPreview()">
-<div id="hoursPreview" class="small muted" style="margin-top:5px"></div>
-<details style="margin-top:10px"><summary class="small muted" style="cursor:pointer">More options: fractional shift</summary>
-<div class="quick" style="margin-top:8px">
-<button onclick="setHours(12)">½ shift<br><span class="small">12h</span></button>
-<button onclick="setHours(18)">¾ shift<br><span class="small">18h</span></button>
-<button onclick="setHours(6)">¼ shift<br><span class="small">6h</span></button>
-</div></details>
-<label>Notes</label><textarea id="notes" placeholder="Optional"></textarea>
-<button style="width:100%;margin-top:10px" onclick="messageFromTx()">💬 Text firefighter</button>
-<div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveTx()">Save</button></div>
-</div>
-<div id="personForm" class="hidden">
-<label>Name</label><input id="pname" placeholder="e.g. Alex Morgan">
-<label>Service number</label><input id="pservice" placeholder="e.g. 123456">
-<label>Contact details</label>
-<div style="display:flex;gap:8px"><input id="pphone" type="tel" placeholder="Mobile number" style="flex:1"><button class="accent" onclick="pickContact('new')">Contacts</button></div>
-<label>Default station</label>
-<button type="button" id="pstationButton" class="inputLike" onclick="openStationPicker('new')" style="width:100%;text-align:left">Search station…</button>
-<input id="pstation" type="hidden">
-<div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="savePerson()">Save</button></div>
-</div>
-<div id="editPersonForm" class="hidden">
-<label>Name</label><input id="epname" placeholder="e.g. Alex Morgan">
-<label>Service number</label><input id="epservice" placeholder="e.g. 123456">
-<label>Contact details</label>
-<div style="display:flex;gap:8px"><input id="epphone" type="tel" placeholder="Mobile number" style="flex:1"><button class="accent" onclick="pickContact('edit')">Contacts</button></div>
-<label>Default station</label>
-<button type="button" id="epstationButton" class="inputLike" onclick="openStationPicker('edit')" style="width:100%;text-align:left">Search station…</button>
-<input id="epstation" type="hidden">
-<div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveEditedPerson()">Save changes</button></div>
-</div>
+<label>Hours</label><div class="actions"><button class="primary" onclick="setHours(24)">1 SHIFT<br><span class="small">24 hours</span></button><button class="accent" onclick="focusCustomHours()">CUSTOM HOURS</button></div><input id="hours" type="number" step="0.25" min="0.25" value="24" oninput="updateHoursPreview()"><div id="hoursPreview" class="small muted"></div>
+<details><summary>Fractional shift</summary><div class="actions"><button onclick="setHours(6)">¼ · 6h</button><button onclick="setHours(12)">½ · 12h</button><button onclick="setHours(18)">¾ · 18h</button></div></details>
+<label>Notes</label><textarea id="notes"></textarea><button style="width:100%;margin-top:10px" onclick="messageFromTx()">💬 Text firefighter</button><div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveTx()">Save</button></div></div>
+<div id="personForm" class="hidden"><label>Name</label><input id="pname" placeholder="e.g. Alex Morgan"><label>Service number</label><input id="pservice" placeholder="e.g. 123456"><label>Mobile</label><input id="pphone" type="tel" placeholder="Mobile number"><label>Default station</label><button type="button" id="pstationButton" class="inputLike" onclick="openStationPicker('new')">Search station…</button><input id="pstation" type="hidden"><div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="savePerson()">Save</button></div></div>
+<div id="editPersonForm" class="hidden"><label>Name</label><input id="epname"><label>Service number</label><input id="epservice"><label>Mobile</label><input id="epphone" type="tel"><label>Default station</label><button type="button" id="epstationButton" class="inputLike" onclick="openStationPicker('edit')">Search station…</button><input id="epstation" type="hidden"><div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveEditedPerson()">Save changes</button></div></div>
 </div></div>
 
-
-<div id="detail" class="modal hidden"><div class="sheet">
-<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="detailTitle">Balance</h2><button onclick="closeDetail()">✕</button></div>
-<div id="detailBody"></div>
-</div></div>
-<div id="settings" class="modal hidden"><div class="sheet">
-<div style="display:flex;justify-content:space-between"><h2>Settings</h2><button onclick="closeSettings()">✕</button></div>
-<p class="muted">Version 12 fixed. V11 layout retained; searchable station picker layering fixed; no navigation/layout overlay changes. Firefighter records include service number and FRNSW station selection; station numbers are sourced from the current FRNSW Station Index. Firefighter records now support mobile contact details, optional iOS/browser contact picking where supported, and SMS initiation from PCOS entry. New firefighters can be added directly from Add PCOS and firefighter details can be edited from People. Full 24-hour shift is the primary entry; custom hours is the second option. Balances are calculated from transaction history; settlement creates a normal historical transaction. Data is stored locally in this browser.</p>
-<button class="danger" style="width:100%" onclick="resetDemo()">Reset to placeholder data</button>
-</div></div>
-<div class="footer">PCOS Ledger V2 · local prototype</div>
+<div id="detail" class="modal hidden"><div class="sheet"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="detailTitle"></h2><button onclick="closeDetail()">✕</button></div><div id="detailBody"></div></div></div>
+<div id="settings" class="modal hidden"><div class="sheet"><div style="display:flex;justify-content:space-between"><h2>Settings</h2><button onclick="closeSettings()">✕</button></div><p class="muted">Data is stored locally in this browser. Use Backup to save a copy.</p><button class="danger" style="width:100%" onclick="resetDemo()">Reset to placeholder data</button></div></div>
 </div>
+
+<div id="pickerPanel" class="searchPanel hidden"><div class="searchTop"><button onclick="closePicker()">Cancel</button><input id="pickerSearch" placeholder="Search…"></div><div id="pickerResults"></div></div>
 
 <script>
-const KEY1='pcos_v2_people',KEY2='pcos_v2_tx';
-let people=JSON.parse(localStorage.getItem(KEY1)||'null');
-let tx=JSON.parse(localStorage.getItem(KEY2)||'null');
-let editing=null,dir='you',addingPersonFromTx=false;
-
-const FRNSW_STATIONS = [
-["001","City of Sydney Fire Station"],["003","The Rocks Fire Station"],["004","Darlinghurst Fire Station"],
-["005","Newtown Fire Station"],["006","Mona Vale Fire Station"],["007","Horningsea Park Fire Station"],
-["008","Liverpool Fire Station"],["010","Redfern Fire Station"],["011","Woollahra Fire Station"],
-["012","Balmain Fire Station"],["013","Alexandria Fire Station"],["014","Ashfield Fire Station"],
-["015","Burwood Fire Station"],["016","Concord Fire Station"],["017","Drummoyne Fire Station"],
-["018","Glebe Fire Station"],["019","Silverwater Fire Station"],["020","Hurstville Fire Station"],
-["021","Kogarah Fire Station"],["022","Leichhardt Fire Station"],["023","Gladesville Fire Station"],
-["024","Manly Fire Station"],["025","Mosman Fire Station"],["026","Mascot Fire Station"],
-["027","Parramatta Fire Station"],["028","Marrickville Fire Station"],["029","Arncliffe Fire Station"],
-["030","Lidcombe Fire Station"],["031","Busby Fire Station"],["032","Mount Druitt Fire Station"],
-["033","Engadine Fire Station"],["034","Riverwood Fire Station"],["035","Botany Fire Station"],
-["036","Crows Nest Fire Station"],["037","Gordon Fire Station"],["038","Pyrmont Fire Station"],
-["039","Randwick Fire Station"],["040","Willoughby Fire Station"],["041","Smithfield Fire Station"],
-["042","Ryde Fire Station"],["043","Seven Hills Fire Station"],["045","Miranda Fire Station"],
-["046","Sutherland Fire Station"],["047","Revesby Fire Station"],["048","Mortdale Fire Station"],
-["049","Cabramatta Fire Station"],["050","Hornsby Fire Station"],["051","Forestville Fire Station"],
-["052","Campsie Fire Station"],["053","Neutral Bay Fire Station"],["054","Cronulla Fire Station"],
-["055","Guildford Fire Station"],["056","Matraville Fire Station"],["057","Wentworthville Fire Station"],
-["058","Beecroft Fire Station"],["059","Eastwood Fire Station"],["060","Avalon Fire Station"],
-["061","Lane Cove Fire Station"],["062","Bankstown Fire Station"],["063","Blacktown Fire Station"],
-["064","Lakemba Fire Station"],["065","Rydalmere Fire Station"],["066","Rhodes Fire Station"],
-["067","Baulkham Hills Fire Station"],["068","Narrabeen Fire Station"],["069","Dee Why Fire Station"],
-["070","Maroubra Fire Station"],["071","Castle Hill Fire Station"],["072","Merrylands Fire Station"],
-["073","Yennora Fire Station"],["075","Berowra Fire Station"],["076","Bondi Fire Station"],
-["077","St. Marys Fire Station"],["078","Ropes Crossing Fire Station"],["079","Ingleburn Fire Station"],
-["080","Bundeena Fire Station"],["081","Windsor Fire Station"],["082","Richmond Fire Station"],
-["083","Riverstone Fire Station"],["084","Macquarie Fields Fire Station"],["085","Chester Hill Fire Station"],
-["086","Penrith Fire Station"],["087","Rosemeadow Fire Station"],["088","Campbelltown Fire Station"],
-["090","Menai Fire Station"],["092","St. Andrews Fire Station"],["093","Narellan Fire Station"],
-["094","Kellyville Fire Station"],["095","Oran Park Fire Station"],["096","Schofields Fire Station"],
-["097","Huntingwood Fire Station"],["098","Cranebrook Fire Station"],["101","Bonnyrigg Heights Fire Station"],
-["102","Regentville Fire Station"],["105","Kelso Fire Station"],["203","Albury Central Fire Station"],
-["207","Albion Park Fire Station"],["208","Aberdeen Fire Station"],["209","Albury Civic Fire Station"],
-["210","Balgownie Fire Station"],["211","Ballina Fire Station"],["212","Balranald Fire Station"],
-["213","Bangalow Fire Station"],["214","Barham Fire Station"],["215","Barraba Fire Station"],
-["216","Bathurst Fire Station"],["217","Batemans Bay Fire Station"],["218","Batlow Fire Station"],
-["219","Bega Fire Station"],["220","Bellbird Fire Station"],["221","Bellingen Fire Station"],
-["222","Belmont Fire Station"],["223","Berrigan Fire Station"],["224","Berry Fire Station"],
-["225","Bingara Fire Station"],["226","Blackheath Fire Station"],["227","Blayney Fire Station"],
-["228","Berkeley Vale Fire Station"],["229","Boggabri Fire Station"],["230","Bombala Fire Station"],
-["232","Boorowa Fire Station"],["233","Bourke Fire Station"],["234","Bowral Fire Station"],
-["235","Bowraville Fire Station"],["236","Braidwood Fire Station"],["237","Branxton Greta Fire Station"],
-["238","Broken Hill Fire Station"],["239","Broken Hill Sth Fire Station"],["240","Brunswick Heads Fire Station"],
-["241","Bulli Fire Station"],["242","Bundanoon Fire Station"],["243","Byron Bay Fire Station"],
-["244","Brewarrina Fire Station"],["245","Budgewoi Fire Station"],["248","Camden Fire Station"],
-["250","Canowindra Fire Station"],["251","Cardiff Fire Station"],["252","Carrington Fire Station"],
-["253","Casino Fire Station"],["254","Cessnock Fire Station"],["255","Charlestown Fire Station"],
-["256","Cobar Fire Station"],["257","Coffs Harbour Fire Station"],["258","Coledale Fire Station"],
-["259","Condobolin Fire Station"],["260","Newcastle Fire Station"],["261","Coolah Fire Station"],
-["262","Coolamon Fire Station"],["263","Cooma Fire Station"],["264","Coonabarabran Fire Station"],
-["265","Coonamble Fire Station"],["266","Cootamundra Fire Station"],["267","Coraki Fire Station"],
-["268","Corowa Fire Station"],["269","Corrimal Fire Station"],["270","Cowra Fire Station"],
-["271","Crookwell Fire Station"],["272","Culcairn Fire Station"],["277","Dapto Fire Station"],
-["278","Deniliquin Fire Station"],["279","Dorrigo Fire Station"],["280","Dubbo Fire Station"],
-["281","Dunedoo Fire Station"],["282","Dungog Fire Station"],["283","Denman Fire Station"],
-["284","Delroy Fire Station"],["286","Eden Fire Station"],["288","Evans Head Fire Station"],
-["292","Doyalson Fire Station"],["293","Finley Fire Station"],["294","Forbes Fire Station"],
-["295","Forster Fire Station"],["300","Gilgandra Fire Station"],["301","Glenbrook Fire Station"],
-["302","Glen Innes Fire Station"],["303","Gloucester Fire Station"],["304","Gosford Fire Station"],
-["305","Goulburn Fire Station"],["306","Grafton Fire Station"],["307","South Grafton Fire Station"],
-["308","Grenfell Fire Station"],["311","Griffith Fire Station"],["312","Gulgong Fire Station"],
-["313","Gundagai Fire Station"],["314","Gunnedah Fire Station"],["315","Guyra Fire Station"],
-["316","Goonellabah Fire Station"],["321","Hay Fire Station"],["322","Henty Fire Station"],
-["323","Hillston Fire Station"],["324","Holbrook Fire Station"],["325","Helensburgh Fire Station"],
-["331","Inverell Fire Station"],["336","Jerilderie Fire Station"],["337","Junee Fire Station"],
-["338","Jindabyne Fire Station"],["340","Umina Fire Station"],["341","Kariong Fire Station"],
-["342","Kandos Fire Station"],["343","Katoomba Fire Station"],["344","Kearsley Fire Station"],
-["345","Kempsey Fire Station"],["346","Kiama Fire Station"],["347","Kingscliff Fire Station"],
-["349","Kurri Kurri Fire Station"],["350","Kyogle Fire Station"],["351","Bateau Bay Fire Station"],
-["353","Kincumber Fire Station"],["355","Lake Cargelligo Fire Station"],["357","Lambton Fire Station"],
-["358","Laurieton Fire Station"],["359","Lawson Fire Station"],["360","Leeton Fire Station"],
-["361","Leura Fire Station"],["362","Lismore Fire Station"],["363","Lithgow Fire Station"],
-["364","Lithgow West Fire Station"],["365","Lockhart Fire Station"],["367","Lightning Ridge Fire Station"],
-["371","Macksville Fire Station"],["372","Maclean Fire Station"],["373","East Maitland Fire Station"],
-["374","Maitland Fire Station"],["375","Manilla Fire Station"],["376","Merewether Fire Station"],
-["377","Minmi Fire Station"],["378","Mittagong Fire Station"],["379","Moama Fire Station"],
-["380","Molong Fire Station"],["381","Moree Fire Station"],["382","Morpeth Fire Station"],
-["383","Morisset Fire Station"],["384","Moruya Fire Station"],["385","Moss Vale Fire Station"],
-["386","Mt. Victoria Fire Station"],["387","Mudgee Fire Station"],["388","Mullumbimby Fire Station"],
-["389","Harden Fire Station"],["390","Murrurundi Fire Station"],["391","Murwillumbah Fire Station"],
-["392","Muswellbrook Fire Station"],["393","Merriwa Fire Station"],["394","Mulwala Fire Station"],
-["395","Merimbula Fire Station"],["397","Nambucca Heads Fire Station"],["398","Narooma Fire Station"],
-["399","Narrabri Fire Station"],["400","Narrandera Fire Station"],["401","Narromine Fire Station"],
-["402","Salamander Bay Fire Station"],["405","Nowra Fire Station"],["406","Nyngan Fire Station"],
-["411","Oberon Fire Station"],["412","Orange Fire Station"],["417","Parkes Fire Station"],
-["418","Paxton Fire Station"],["419","Peak Hill Fire Station"],["421","Picton Fire Station"],
-["422","Warrawong Fire Station"],["423","Portland Fire Station"],["424","Port Macquarie Fire Station"],
-["426","Perisher Valley Fire Station"],["428","Queanbeyan Fire Station"],["429","Quirindi Fire Station"],
-["432","Raymond Terrace Fire Station"],["434","Hamlyn Terrace Fire Station"],["440","Shoalhaven Fire Station"],
-["441","Sawtell Fire Station"],["442","Scarborough Fire Station"],["443","Scone Fire Station"],
-["444","Singleton Fire Station"],["445","Springwood Fire Station"],["446","Stockton Fire Station"],
-["447","Swansea Fire Station"],["448","South Tamworth Fire Station"],["449","South West Rocks Fire Station"],
-["450","Saratoga Fire Station"],["451","Thredbo Fire Station"],["452","Tamworth Fire Station"],
-["453","Taree Fire Station"],["454","Tarro Fire Station"],["455","Rutherford Fire Station"],
-["456","Temora Fire Station"],["457","Tenterfield Fire Station"],["458","Teralba Fire Station"],
-["459","Terrigal Fire Station"],["460","The Entrance Fire Station"],["461","Thirroul Fire Station"],
-["462","Mayfield West Fire Station"],["463","Tocumwal Fire Station"],["464","Toronto Fire Station"],
-["465","Trangie Fire Station"],["466","Tumbarumba Fire Station"],["467","Tumut Fire Station"],
-["468","Tweed Heads Fire Station"],["470","Toukley Fire Station"],["471","Tea Gardens Fire Station"],
-["472","Turvey Park Fire Station"],["474","Unanderra Fire Station"],["475","Uralla Fire Station"],
-["476","Urunga Fire Station"],["477","Ulladulla Fire Station"],["480","Wagga Wagga Fire Station"],
-["481","Walcha Fire Station"],["482","Walgett Fire Station"],["483","Wallerawang Fire Station"],
-["484","Wallsend Fire Station"],["485","Wangi Wangi Fire Station"],["487","Warialda Fire Station"],
-["488","Shellharbour Fire Station"],["489","Warragamba Fire Station"],["491","Warren Fire Station"],
-["492","Wauchope Fire Station"],["493","Wellington Fire Station"],["494","Wentworth Fire Station"],
-["495","Wentworth Falls Fire Station"],["496","Werris Creek Fire Station"],["498","Holmesville Fire Station"],
-["499","West Wyalong Fire Station"],["500","Tingira Heights Fire Station"],["502","Wingham Fire Station"],
-["503","Wollongong Fire Station"],["505","Wyong Fire Station"],["506","Wee Waa Fire Station"],
-["507","Woolgoolga Fire Station"],["509","Wyoming Fire Station"],["510","Yamba Fire Station"],
-["511","Yass Fire Station"],["512","Yenda Fire Station"],["513","Young Fire Station"],
-["514","Banora Point Fire Station"]
-];
-
-let pickerMode=null;
-function setStationField(mode,value){
-  if(mode==='tx'){$('station').value=value;$('stationButton').textContent=stationName(value)||'Search station…'}
-  if(mode==='new'){$('pstation').value=value;$('pstationButton').textContent=stationName(value)||'Search station…'}
-  if(mode==='edit'){$('epstation').value=value;$('epstationButton').textContent=stationName(value)||'Search station…'}
-}
-function openStationPicker(mode){
-  pickerMode=mode;$('pickerSearch').value='';$('pickerSearch').placeholder='Search station name or number…';$('pickerPanel').classList.remove('hidden');renderStationResults();$('pickerSearch').focus();
-}
-function renderStationResults(){
-  let q=$('pickerSearch').value.toLowerCase().trim();
-  let arr=FRNSW_STATIONS.filter(([n,name])=>(n+' '+name).toLowerCase().includes(q)).slice(0,80);
-  $('pickerResults').innerHTML=arr.map(([n,name])=>`<div class="searchResult" onclick="chooseStation('${esc(n+'|'+name)}')"><b>${n}</b> — ${esc(name.replace(' Fire Station',''))}</div>`).join('')||'<div class="empty">No stations found</div>';
-}
-function chooseStation(value){setStationField(pickerMode,value);closePicker();if(pickerMode==='tx' && $('person').value){let p=people.find(x=>x.id===$('person').value)}}
-function openPersonPicker(){
-  pickerMode='person';$('pickerSearch').value='';$('pickerSearch').placeholder='Search firefighter name or service number…';$('pickerPanel').classList.remove('hidden');renderPersonResults();$('pickerSearch').focus();
-}
-function renderPersonResults(){
-  let q=$('pickerSearch').value.toLowerCase().trim();
-  let arr=people.filter(p=>(p.name+' '+(p.service||'')).toLowerCase().includes(q));
-  $('pickerResults').innerHTML=arr.map(p=>`<div class="searchResult" onclick="choosePerson('${p.id}')"><b>${esc(p.name)}</b><div class="small muted">${esc(p.service||'No service number')} · ${esc(stationName(p.station)||'No station')}</div></div>`).join('')||'<div class="empty">No firefighters found</div>';
-}
-function choosePerson(id){
-  $('person').value=id;let p=people.find(x=>x.id===id);
-  $('personButton').textContent=p?.name||'Search firefighter…';
-  if(p && !$('station').value){setStationField('tx',p.station||'')}
-  closePicker();
-}
-function closePicker(){$('pickerPanel').classList.add('hidden');pickerMode=null}
-
-function stationOptions(selected=""){
-  return `<option value="">Select station</option>` + FRNSW_STATIONS.map(([n,name])=>`<option value="${esc(n+'|'+name)}" ${selected===n+'|'+name?'selected':''}>${n} — ${esc(name.replace(' Fire Station',''))}</option>`).join('');
-}
-function stationName(value){let x=FRNSW_STATIONS.find(([n,name])=>value===n+'|'+name);return x?`${x[0]} — ${x[1].replace(' Fire Station','')}`:(value||'')}
-function stationNumber(value){return (value||'').split('|')[0]}
-
-function demo(){return [{id:'p1',name:'Alex Morgan',station:'015|Burwood Fire Station',service:'100001',phone:'0400 000 001'},{id:'p2',name:'Taylor Smith',station:'017|Drummoyne Fire Station',service:'100002',phone:'0400 000 002'},{id:'p3',name:'Jordan Lee',station:'015|Burwood Fire Station',service:'100003',phone:'0400 000 003'},{id:'p4',name:'Casey Brown',station:'010|Redfern Fire Station',service:'100004',phone:'0400 000 004'}]}
-function demoTx(){return [
-{id:'t1',personId:'p1',date:'2026-08-28',station:'015|Burwood Fire Station',hours:24,dir:'you',notes:'Example PCOS'},
-{id:'t2',personId:'p1',date:'2026-08-14',station:'015|Burwood Fire Station',hours:12,dir:'them',notes:'Example PCOS'},
-{id:'t3',personId:'p2',date:'2026-08-10',station:'017|Drummoyne Fire Station',hours:24,dir:'you',notes:'Example PCOS'},
-{id:'t4',personId:'p3',date:'2026-07-30',station:'015|Burwood Fire Station',hours:8,dir:'them',notes:'Example PCOS'}]}
-if(!people){people=demo();tx=demoTx();persist()}
-const $=id=>document.getElementById(id);
-function persist(){localStorage.setItem(KEY1,JSON.stringify(people));localStorage.setItem(KEY2,JSON.stringify(tx))}
-function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');render();scrollTo(0,0)}
-function openTx(id=null){if(!people.length)return alert('Add a firefighter first.');editing=id; $('modalTitle').textContent=id?'Edit PCOS':'Add PCOS';$('txForm').classList.remove('hidden');$('personForm').classList.add('hidden');$('editPersonForm').classList.add('hidden');let s=$('person');s.innerHTML=people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
-if(id){let t=tx.find(x=>x.id===id);$('person').value=t.personId;let ep=people.find(x=>x.id===t.personId);$('personButton').textContent=ep?.name||'Search firefighter…';$('date').value=t.date;$('station').value=t.station;$('hours').value=t.hours;$('notes').value=t.notes||'';setDir(t.dir);updateHoursPreview()}else{$('date').value=new Date().toISOString().slice(0,10);$('station').value=people[0]?.station||'';$('hours').value=24;$('notes').value='';setDir('you');updateHoursPreview()}$('modal').classList.remove('hidden')}
-function openPerson(){addingPersonFromTx=false;editing=null;$('modalTitle').textContent='Add firefighter';$('txForm').classList.add('hidden');$('personForm').classList.remove('hidden');$('editPersonForm').classList.add('hidden');$('pname').value='';$('pservice').value='';$('pstation').value='';$('pstationButton').textContent='Search station…';$('pphone').value='';$('modal').classList.remove('hidden')}
-function closeModal(){$('modal').classList.add('hidden')}
-function setDir(x){dir=x;$('youBtn').classList.toggle('selected',x==='you');$('themBtn').classList.toggle('selected',x==='them')}
-function setHours(h){$('hours').value=h;updateHoursPreview()}
-function focusCustomHours(){$("hours").focus();$("hours").select()}
-
-function addPersonFromTx(){
-  addingPersonFromTx=true;editing=null;
-  $('modalTitle').textContent='New firefighter';
-  $('txForm').classList.add('hidden');$('personForm').classList.remove('hidden');$('editPersonForm').classList.add('hidden');
-  $('pname').value='';$('pservice').value='';$('pstation').value='';$('pstationButton').textContent='Search station…';$('pphone').value='';$('modal').classList.remove('hidden');$('pname').focus();
-}
-function personChanged(){
-  let p=people.find(x=>x.id===$('person').value);
-  if(p && !$('station').value.trim()) $('station').value=p.station||'';
-}
-function editPerson(id){
-  let p=people.find(x=>x.id===id);if(!p)return;
-  editing=id;addingPersonFromTx=false;
-  $('modalTitle').textContent='Edit firefighter';
-  $('txForm').classList.add('hidden');$('personForm').classList.add('hidden');$('editPersonForm').classList.remove('hidden');
-  $('epname').value=p.name;$('epservice').value=p.service||'';$('epstation').value=p.station||'';$('epstationButton').textContent=stationName(p.station||'')||'Search station…';$('epphone').value=p.phone||'';$('modal').classList.remove('hidden');
-}
-function saveEditedPerson(){
-  let p=people.find(x=>x.id===editing),n=$('epname').value.trim();
-  if(!p||!n)return alert('Enter a name.');
-  p.name=n;p.service=$('epservice').value.trim();p.station=$('epstation').value;p.phone=$('epphone').value.trim();persist();closeModal();render();
-}
-
-
-async function pickContact(mode){
-  if(!('contacts' in navigator) || !navigator.contacts.select){
-    alert('Your current iPhone browser does not expose Contacts to this web app. You can enter the mobile number manually.');
-    return;
-  }
-  try{
-    let c=await navigator.contacts.select(['name','tel'],{multiple:false});
-    if(!c.length)return;
-    let name=Array.isArray(c[0].name)?c[0].name[0]:(c[0].name||'');
-    let tel=Array.isArray(c[0].tel)?c[0].tel[0]:(c[0].tel||'');
-    if(mode==='new'){
-      $('pname').value=name;$('pphone').value=tel;
-    }else{
-      $('epname').value=name;$('epphone').value=tel;
-    }
-  }catch(e){}
-}
-function messagePerson(id){
-  let p=people.find(x=>x.id===id);if(!p?.phone)return alert('No mobile number saved for this firefighter.');
-  let msg=prompt('Optional message to '+p.name+':','PCOS Ledger: regarding our part change of shift.');
-  if(msg===null)return;
-  window.location.href='sms:'+p.phone.replace(/[^0-9+]/g,'')+'?body='+encodeURIComponent(msg);
-}
-function messageFromTx(){
-  let p=people.find(x=>x.id===$('person').value);if(!p?.phone)return alert('No mobile number saved for this firefighter. Add one in People.');
-  let msg='PCOS: '+($('date').value||'')+' · '+($('station').value||'')+' · '+$('hours').value+' hours';
-  window.location.href='sms:'+p.phone.replace(/[^0-9+]/g,'')+'?body='+encodeURIComponent(msg);
-}
-
-function savePerson(){
-  let n=$('pname').value.trim();if(!n)return alert('Enter a name.');
-  let np={id:crypto.randomUUID(),name:n,service:$('pservice').value.trim(),station:$('pstation').value,phone:$('pphone').value.trim()};people.push(np);persist();
-  if(addingPersonFromTx){addingPersonFromTx=false;closeModal();openTx();$('person').value=np.id;$('station').value=np.station||'';updateHoursPreview();}
-  else{closeModal();render()}
-}
-function saveTx(){let p=people.find(x=>x.id===$('person').value),h=parseFloat($('hours').value);if(!p||!h||h<=0)return alert('Enter valid details.');let obj={personId:p.id,date:$('date').value,station:$('station').value.trim(),hours:h,dir,notes:$('notes').value.trim()};if(editing){Object.assign(tx.find(x=>x.id===editing),obj)}else{tx.unshift({id:crypto.randomUUID(),...obj})}persist();closeModal();render()}
-function delTx(id){if(confirm('Delete this PCOS record?')){tx=tx.filter(t=>t.id!==id);persist();render()}}
-function delPerson(id){if(tx.some(t=>t.personId===id))return alert('This firefighter has PCOS records. Delete the records first, or keep the firefighter.');if(confirm('Delete this firefighter?')){people=people.filter(p=>p.id!==id);persist();render()}}
-function balances(){let b={};tx.forEach(t=>b[t.personId]=(b[t.personId]||0)+(t.dir==='you'?t.hours:-t.hours));return b}
-function fmt(h){let sign=h>0?'+':h<0?'−':'';let a=Math.abs(h);let s=a/24;let hs=Number.isInteger(a)?a:a.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');let ss=Number.isInteger(s)?s:s.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');return `${sign}${hs} hrs`}
-function shift(h){let s=h/24;return `${s>0?'+':s<0?'−':''}${Math.abs(s).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')} shifts`}
-function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
-function item(t){let p=people.find(x=>x.id===t.personId),v=t.dir==='you'?t.hours:-t.hours;return `<div class="row"><div><div class="name">${esc(p?.name||'Unknown')}</div><div class="small muted">${esc(stationName(t.station)||t.station||'—')} · ${esc(t.date)}</div><div class="small muted">${t.dir==='you'?'You worked':'They worked'} · ${t.hours} hrs${t.notes?' · '+esc(t.notes):''}</div></div><div style="text-align:right"><div class="${v>0?'pos':'neg'}">${fmt(v)}</div><div class="small muted">${shift(v)}</div><div style="margin-top:5px"><button class="small" onclick="openTx('${t.id}')">Edit</button> <button class="small danger" onclick="delTx('${t.id}')">Delete</button></div></div></div>`}
-function render(){let b=balances(),net=tx.reduce((n,t)=>n+(t.dir==='you'?t.hours:-t.hours),0),owed=Object.values(b).filter(x=>x>0).reduce((a,x)=>a+x,0),owe=-Object.values(b).filter(x=>x<0).reduce((a,x)=>a+x,0);
-$('net').textContent=fmt(net);$('netShift').textContent=shift(net);$('owed').textContent=fmt(owed);$('owe').textContent=fmt(owe);
-$('outstanding').innerHTML=people.map(p=>({p,h:b[p.id]||0})).filter(x=>x.h!==0).sort((a,z)=>z.h-a.h).map(x=>`<div class="row balanceTap" onclick="showPerson('${x.p.id}')"><div><div class="name">${esc(x.p.name)}</div><div class="small muted">${esc(x.p.station)}</div></div><div class="${x.h>0?'pos':'neg'}">${fmt(x.h)}<div class="small">${shift(x.h)}</div></div></div>`).join('')||'<div class="empty">No outstanding balances</div>';
-$('recent').innerHTML=tx.slice(0,6).map(item).join('')||'<div class="empty">No PCOS recorded</div>';
-let q=($('q')?.value||'').toLowerCase(),f=$('from')?.value||'',to=$('to')?.value||'';let list=tx.filter(t=>{let p=people.find(x=>x.id===t.personId);return (!q||`${p?.name} ${t.station} ${t.notes}`.toLowerCase().includes(q))&&(!f||t.date>=f)&&(!to||t.date<=to)});$('historyList').innerHTML=list.map(item).join('')||'<div class="empty">No matching records</div>';
-$('peopleList').innerHTML=people.map(p=>{let h=b[p.id]||0;return `<div class="row"><div><div class="name">${esc(p.name)}</div><div class="small muted">${esc(stationName(p.station))}${p.service?' · '+esc(p.service):''}${p.phone?' · '+esc(p.phone):''}</div></div><div style="text-align:right"><div class="${h>0?'pos':h<0?'neg':''}">${fmt(h)}</div><button class="small" onclick="editPerson('${p.id}')">Edit</button> <button class="small danger" onclick="delPerson('${p.id}')">Delete</button></div></div>`}).join('')||'<div class="empty">No firefighters</div>';
-$('rCount').textContent=tx.length;$('rNet').textContent=fmt(net);$('rYou').textContent=fmt(tx.filter(t=>t.dir==='you').reduce((a,t)=>a+t.hours,0));$('rThem').textContent=fmt(tx.filter(t=>t.dir==='them').reduce((a,t)=>a+t.hours,0));
-$('reportPeople').innerHTML=people.map(p=>`<div class="row"><span class="name">${esc(p.name)}</span><span class="${(b[p.id]||0)>0?'pos':(b[p.id]||0)<0?'neg':''}">${fmt(b[p.id]||0)}</span></div>`).join('');
-['home','history','people','reports'].forEach(id=>$('n'+id).classList.toggle('selected',!$(id).classList.contains('hidden')))}
-
-function clearFilters(){if($('q'))$('q').value='';if($('from'))$('from').value='';if($('to'))$('to').value='';render()}
-function setThisYear(){let y=new Date().getFullYear();$('from').value=`${y}-01-01`;$('to').value=`${y}-12-31`;render()}
-
-function exportCSV(){let lines=[['Date','Firefighter','Station','Hours','Direction','Balance Effect','Notes']];tx.forEach(t=>{let p=people.find(x=>x.id===t.personId);lines.push([t.date,p?.name||'',t.station,t.hours,t.dir==='you'?'You worked':'They worked',t.dir==='you'?t.hours:-t.hours,t.notes||''])});let csv=lines.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('\\n');download('pcos-ledger.csv','text/csv',csv)}
-function exportJSON(){download('pcos-ledger-backup.json','application/json',JSON.stringify({version:2,people,tx},null,2))}
-function download(name,type,data){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function importJSON(e){let file=e.target.files[0];if(!file)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.people)||!Array.isArray(x.tx))throw 0;people=x.people;tx=x.tx;persist();render();alert('Backup restored.')}catch{alert('That backup could not be read.')}};r.readAsText(file)}
-function resetDemo(){if(confirm('Replace current data with placeholder demo data?')){people=demo();tx=demoTx();persist();closeSettings();render()}}
-function openSettings(){$('settings').classList.remove('hidden')}function closeSettings(){$('settings').classList.add('hidden')}
-
-
-let balanceCache=null,balanceCacheKey='';
-function cachedBalances(){
-  let key=tx.map(t=>t.id+':'+t.hours+':'+t.dir).join('|');
-  if(key!==balanceCacheKey){balanceCache=balances();balanceCacheKey=key}
-  return balanceCache||{};
-}
-
-function showPerson(id){
-  let p=people.find(x=>x.id===id), b=cachedBalances()[id]||0;
-  let rows=tx.filter(t=>t.personId===id).sort((a,b)=>b.date.localeCompare(a.date));
-  $('detailTitle').textContent=p?.name||'Balance';
-  let running=0;
-  let chronological=[...rows].sort((a,b)=>a.date.localeCompare(b.date));
-  let rb={}; chronological.forEach(t=>{running += t.dir==='you'?t.hours:-t.hours; rb[t.id]=running});
-  $('detailBody').innerHTML=`<div class="balance" style="padding:8px 0 18px"><div class="eyebrow">CURRENT BALANCE</div><div class="big ${b>=0?'pos':'neg'}">${fmt(b)}</div><div class="secondary">${shift(b)}</div></div>
-  <div class="actions"><button class="accent" onclick="openTxFor('${p.id}')">＋ Add PCOS</button></div>
-${p.phone?`<button style="width:100%;margin-top:8px" onclick="messagePerson('${p.id}')">💬 Text ${esc(p.name)}</button>`:''}
-  <div class="card"><div class="small muted">DEFAULT STATION</div><b>${esc(stationName(p?.station||''))}</b>${p?.service?`<div class="small muted" style="margin-top:5px">Service number: ${esc(p.service)}</div>`:''}${p?.phone?`<div class="small muted" style="margin-top:5px">Mobile: ${esc(p.phone)}</div>`:''}</div>
-  <h3>PCOS history</h3>${rows.map(t=>`<div class="row"><div><div class="name">${esc(t.date)}</div><div class="small muted">${esc(t.station||'—')} · ${t.dir==='you'?'You worked':'They worked'} · ${t.hours} hrs</div><div class="small muted">${esc(t.notes||'')}</div></div><div style="text-align:right"><div class="${(t.dir==='you'?t.hours:-t.hours)>0?'pos':'neg'}">${fmt(t.dir==='you'?t.hours:-t.hours)}</div><div class="small muted">Balance ${fmt(rb[t.id])}</div><button class="small" onclick="openTx('${t.id}')">Edit</button></div></div>`).join('')||'<div class="empty">No records</div>'}`;
-  $('detail').classList.remove('hidden');
-}
-
-function openTxFor(personId){closeDetail();openTx();$('person').value=personId;let p=people.find(x=>x.id===personId);$('station').value=p?.station||''}
-function settle(personId){
-  let b=balances()[personId]||0;
-  if(!b)return alert('This balance is already zero.');
-  let p=people.find(x=>x.id===personId);
-  if(!confirm(`Settle ${p.name}'s balance of ${fmt(b)}?`))return;
-  tx.unshift({id:crypto.randomUUID(),personId,date:new Date().toISOString().slice(0,10),station:p.station||'',hours:Math.abs(b),dir:b>0?'them':'you',notes:'Balance settled'});
-  persist();showPerson(personId);render();
-}
-function updateHoursPreview(){
-  let h=parseFloat($('hours').value)||0;
-  $('hoursPreview').textContent=h?`${h} hours = ${Math.abs(h/24).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')} shift${h===24?'':'s'} of a 24-hour roster`:'';
-}
-
-function closeDetail(){$('detail').classList.add('hidden')}
-function toast(msg){let x=document.createElement('div');x.className='toast';x.textContent=msg;document.body.appendChild(x);setTimeout(()=>x.remove(),2600)}
-function installHelp(){ $('installHint').classList.toggle('hidden') }
-function populateYears(){
-  let years=[...new Set(tx.map(t=>t.date?.slice(0,4)).filter(Boolean))].sort().reverse();
-  let y=new Date().getFullYear().toString();if(!years.includes(y))years.unshift(y);
-  let s=$('reportYear');if(s){let cur=s.value||y;s.innerHTML=years.map(a=>`<option>${a}</option>`).join('');if(years.includes(cur))s.value=cur}
-}
-function renderReportYear(){
-  populateYears();let y=$('reportYear')?.value;
-  let data=tx.filter(t=>!y||t.date.startsWith(y));
-  let net=data.reduce((n,t)=>n+(t.dir==='you'?t.hours:-t.hours),0);
-  $('rCount').textContent=data.length;$('rNet').textContent=fmt(net);
-  $('rYou').textContent=fmt(data.filter(t=>t.dir==='you').reduce((a,t)=>a+t.hours,0));
-  $('rThem').textContent=fmt(data.filter(t=>t.dir==='them').reduce((a,t)=>a+t.hours,0));
-  if($('reportSubtitle'))$('reportSubtitle').textContent=`${y||'All years'} · ${data.length} recorded transaction${data.length===1?'':'s'}`;
-}
-if(window.navigator.standalone===false || /iPhone|iPad|iPod/.test(navigator.userAgent)) $('installHint').classList.remove('hidden');
-
-const originalRender=render;
-render=function(){originalRender();renderReportYear()}
-
-render();
-document.addEventListener('input',e=>{if(e.target.id==='pickerSearch'){if(pickerMode==='person')renderPersonResults();else renderStationResults()}});
-</script>
-<div id="pickerPanel" class="searchPanel hidden">
-<div class="top"><button onclick="closePicker()">Cancel</button><input id="pickerSearch" placeholder="Search…"></div>
-<div id="pickerResults"></div>
-</div></body></html>
+const S=[
+["001","City of Sydney"],["003","The Rocks"],["004","Darlinghurst"],["005","Newtown"],["006","Mona Vale"],["008","Liverpool"],["010","Redfern"],["011","Woollahra"],["012","Balmain"],["013","Alexandria"],["014","Ashfield"],["015","Burwood"],["016","Concord"],["017","Drummoyne"],["018","Glebe"],["019","Silverwater"],["020","Hurstville"],["021","Kogarah"],["022","Leichhardt"],["023","Gladesville"],["024","Manly"],["025","Mosman"],["026","Mascot"],["027","Parramatta"],["028","Marrickville"],["029","Arncliffe"],["030","Lidcombe"],["032","Mount Druitt"],["033","Engadine"],["034","Riverwood"],["035","Botany"],["036","Crows Nest"],["037","Gordon"],["038","Pyrmont"],["039","Randwick"],["040","Willoughby"],["041","Smithfield"],["042","Ryde"],["043","Seven Hills"],["045","Miranda"],["046","Sutherland"],["047","Revesby"],["049","Cabramatta"],["050","Hornsby"],["052","Campsie"],["053","Neutral Bay"],["054","Cronulla"],["055","Guildford"],["056","Matraville"],["057","Wentworthville"],["058","Beecroft"],["059","Eastwood"],["060","Avalon"],["061","Lane Cove"],["062","Bankstown"],["063","Blacktown"],["064","Lakemba"],["065","Rydalmere"],["067","Baulkham Hills"],["068","Narrabeen"],["069","Dee Why"],["070","Maroubra"],["071","Castle Hill"],["072","Merrylands"],["075","Berowra"],["076","Bondi"],["077","St Marys"],["079","Ingleburn"],["080","Bundeena"],["081","Windsor"],["082","Richmond"],["083","Riverstone"],["084","Macquarie Fields"],["086","Penrith"],["087","Rosemeadow"],["088","Campbelltown"],["090","Menai"],["092","St Andrews"],["093","Narellan"],["094","Kellyville"],["095","Oran Park"],["096","Schofields"],["097","Huntingwood"],["203","Albury"],["216","Bathurst"],["217","Batemans Bay"],["218","Batlow"],["219","Bega"],["220","Bellbird"],["221","Bellingen"],["222","Belmont"],["224","Berry"],["226","Blackheath"],["227","Blayney"],["232","Boorowa"],["233","Bourke"],["234","Bowral"],["235","Bowraville"],["236","Braidwood"],["237","Branxton Greta"],["238","Broken Hill"],["241","Bulli"],["242","Bundanoon"],["243","Byron Bay"],["244","Brewarrina"],["248","Camden"],["250","Canowindra"],["251","Cardiff"],["252","Carrington"],["253","Casino"],["254","Cessnock"],["255","Charlestown"],["256","Cobar"],["257","Coffs Harbour"],["258","Coledale"],["259","Condobolin"],["260","Newcastle"],["261","Coolah"],["262","Coolamon"],["263","Cooma"],["264","Coonabarabran"],["265","Coonamble"],["266","Cootamundra"],["267","Coraki"],["268","Corowa"],["269","Corrimal"],["270","Cowra"],["271","Crookwell"],["272","Culcairn"],["277","Dapto"],["278","Deniliquin"],["279","Dorrigo"],["280","Dubbo"],["281","Dunedoo"],["282","Dungog"],["286","Eden"],["288","Evans Head"],["292","Doyalson"],["293","Finley"],["294","Forbes"],["295","Forster"],["300","Gilgandra"],["301","Glenbrook"],["302","Glen Innes"],["303","Gloucester"],["304","Gosford"],["305","Goulburn"],["306","Grafton"],["307","South Grafton"],["308","Grenfell"],["311","Griffith"],["312","Gulgong"],["313","Gundagai"],["314","Gunnedah"],["315","Guyra"],["316","Goonellabah"],["321","Hay"],["322","Henty"],["323","Hillston"],["324","Holbrook"],["325","Helensburgh"],["331","Inverell"],["336","Jerilderie"],["337","Junee"],["338","Jindabyne"],["340","Umina"],["341","Kariong"],["342","Kandos"],["343","Katoomba"],["344","Kearsley"],["345","Kempsey"],["346","Kiama"],["347","Kingscliff"],["349","Kurri Kurri"],["350","Kyogle"],["351","Bateau Bay"],["353","Kincumber"],["355","Lake Cargelligo"],["357","Lambton"],["358","Laurieton"],["359","Lawson"],["360","Leeton"],["361","Leura"],["362","Lismore"],["363","Lithgow"],["365","Lockhart"],["367","Lightning Ridge"],["371","Macksville"],["372","Maclean"],["373","East Maitland"],["374","Maitland"],["375","Manilla"],["376","Merewether"],["377","Minmi"],["378","Mittagong"],["379","Moama"],["380","Molong"],["381","Moree"],["382","Morpeth"],["383","Morisset"],["384","Moruya"],["385","Moss Vale"],["386","Mt Victoria"],["387","Mudgee"],["388","Mullumbimby"],["390","Murrurundi"],["391","Murwillumbah"],["392","Muswellbrook"],["393","Merriwa"],["394","Mulwala"],["395","Merimbula"],["397","Nambucca Heads"],["398","Narooma"],["399","Narrabri"],["400","Narrandera"],["401","Narromine"],["402","Salamander Bay"],["405","Nowra"],["406","Nyngan"],["411","Oberon"],["412","Orange"],["417","Parkes"],["418","Paxton"],["419","Peak Hill"],["421","Picton"],["422","Warrawong"],["423","Portland"],["424","Port Macquarie"],["426","Perisher Valley"],["428","Queanbeyan"],["429","Quirindi"],["432","Raymond Terrace"],["434","Hamlyn Terrace"],["440","Shoalhaven"],["441","Sawtell"],["442","Scarborough"],["443","Scone"],["444","Singleton"],["445","Springwood"],["446","Stockton"],["447","Swansea"],["448","South Tamworth"],["449","South West Rocks"],["450","Saratoga"],["451","Thredbo"],["452","Tamworth"],["453","Taree"],["454","Tarro"],["455","Rutherford"],["456","Temora"],["457","Tenterfield"],["458","Teralba"],["459","Terrigal"],["460","The Entrance"],["461","Thirroul"],["462","Mayfield West"],["463","Tocumwal"],["464","Toronto"],["465","Trangie"],["466","Tumbarumba"],["467","Tumut"],["468","Tweed Heads"],["470","Toukley"],["471","Tea Gardens"],["472","Turvey Park"],["474","Unanderra"],["475","Uralla"],["476","Urunga"],["477","Ulladulla"],["480","Wagga Wagga"],["481","Walcha"],["482","Walgett"],["483","Wallerawang"],["484","Wallsend"],["485","Wangi Wangi"],["487","Warialda"],["488","Shellharbour"],["489","Warragamba"],["491","Warren"],["492","Wauchope"],["493","Wellington"],["494","Wentworth"],["495","Wentworth Falls"],["496","Werris Creek"],["498","Holmesville"],["499","West Wyalong"],["500","Tingira Heights"],["502","Wingham"],["503","Wollongong"],["505","Wyong"],["506","Wee Waa"],["507","Woolgoolga"],["509","Wyoming"],["510","Yamba"],["511","Yass"],["512","Yenda"],["513","Young"],["514","Banora Point"]];
+const $=id=>document.getElementById(id);let people=[],tx=[],dir="you",editing=null,pickerMode=null,addingPersonFromTx=false;
+function load(){try{people=JSON.parse(localStorage.getItem("pcos_people")||"null")||demoPeople();tx=JSON.parse(localStorage.getItem("pcos_tx")||"null")||[]}catch{people=demoPeople();tx=[]}render()}
+function save(){localStorage.setItem("pcos_people",JSON.stringify(people));localStorage.setItem("pcos_tx",JSON.stringify(tx))}
+function demoPeople(){return[{id:"p1",name:"Alex Morgan",service:"100001",station:"015|Burwood",phone:"0400 000 001"},{id:"p2",name:"Taylor Smith",service:"100002",station:"017|Drummoyne",phone:"0400 000 002"},{id:"p3",name:"Jordan Lee",service:"100003",station:"015|Burwood",phone:"0400 000 003"},{id:"p4",name:"Casey Brown",service:"100004",station:"010|Redfern",phone:"0400 000 004"}]}
+function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]))}
+function stationName(v){let [n,name]=(v||"").split("|");let x=S.find(a=>a[0]===n);return x?`${x[0]} — ${x[1]}`:(v||"")}
+function fmt(h){let sign=h>0?"+":h<0?"−":"";let a=Math.abs(h);return sign+(Number.isInteger(a)?a:a.toFixed(2).replace(/0+$/,"").replace(/\.$/,""))+" hrs"}
+function shift(h){let x=h/24;return (x>0?"+":x<0?"−":"")+Math.abs(x).toFixed(2).replace(/0+$/,"").replace(/\.$/,"")+" shifts"}
+function balances(){let b={};tx.forEach(t=>b[t.personId]=(b[t.personId]||0)+(t.dir==="you"?t.hours:-t.hours));return b}
+function showPage(id){document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));$(id).classList.remove("hidden");document.querySelectorAll(".appnav button").forEach(b=>b.classList.remove("selected"));$("n"+id).classList.add("selected");render()}
+function render(){let b=balances(),net=tx.reduce((a,t)=>a+(t.dir==="you"?t.hours:-t.hours),0),owed=Object.values(b).filter(x=>x>0).reduce((a,x)=>a+x,0),owe=-Object.values(b).filter(x=>x<0).reduce((a,x)=>a+x,0);$("net").textContent=fmt(net);$("netShift").textContent=shift(net);$("owed").textContent=fmt(owed);$("owe").textContent=fmt(owe);
+$("outstanding").innerHTML=people.map(p=>({p,h:b[p.id]||0})).filter(x=>x.h).sort((a,z)=>z.h-a.h).map(x=>`<div class="row" onclick="showPerson('${x.p.id}')"><div><div class="name">${esc(x.p.name)}</div><div class="small muted">${esc(stationName(x.p.station))}</div></div><div class="${x.h>0?"pos":"neg"}">${fmt(x.h)}<div class="small">${shift(x.h)}</div></div></div>`).join("")||'<div class="empty">No outstanding balances</div>';
+$("recent").innerHTML=tx.slice(0,6).map(item).join("")||'<div class="empty">No PCOS recorded</div>';
+let q=($("q")?.value||"").toLowerCase(),f=$("from")?.value||"",to=$("to")?.value||"";let list=tx.filter(t=>{let p=people.find(x=>x.id===t.personId);return(!q||`${p?.name} ${t.station} ${t.notes}`.toLowerCase().includes(q))&&(!f||t.date>=f)&&(!to||t.date<=to)});$("historyList").innerHTML=list.map(item).join("")||'<div class="empty">No matching records</div>';
+$("peopleList").innerHTML=people.map(p=>{let h=b[p.id]||0;return`<div class="row"><div><div class="name">${esc(p.name)}</div><div class="small muted">${esc(p.service||"")} · ${esc(stationName(p.station))}${p.phone?" · "+esc(p.phone):""}</div></div><div style="text-align:right"><div class="${h>0?"pos":h<0?"neg":""}">${fmt(h)}</div><button onclick="editPerson('${p.id}')">Edit</button></div></div>`}).join("")||'<div class="empty">No firefighters</div>';
+populateYears();let y=$("reportYear").value;let data=tx.filter(t=>t.date.startsWith(y));$("rCount").textContent=data.length;$("rNet").textContent=fmt(data.reduce((a,t)=>a+(t.dir==="you"?t.hours:-t.hours),0));$("rYou").textContent=fmt(data.filter(t=>t.dir==="you").reduce((a,t)=>a+t.hours,0));$("rThem").textContent=fmt(data.filter(t=>t.dir==="them").reduce((a,t)=>a+t.hours,0));$("reportSubtitle").textContent=`${y} · ${data.length} recorded transaction${data.length===1?"":"s"}`;$("reportPeople").innerHTML=people.map(p=>`<div class="row"><span class="name">${esc(p.name)}</span><span>${fmt(b[p.id]||0)}</span></div>`).join("");}
+function item(t){let p=people.find(x=>x.id===t.personId),v=t.dir==="you"?t.hours:-t.hours;return`<div class="row"><div><div class="name">${esc(p?.name||"Unknown")}</div><div class="small muted">${esc(stationName(t.station))} · ${esc(t.date)}</div><div class="small muted">${t.dir==="you"?"You worked":"They worked"} · ${t.hours} hrs</div></div><div style="text-align:right"><div class="${v>0?"pos":"neg"}">${fmt(v)}</div><div class="small">${shift(v)}</div><button onclick="openTx('${t.id}')">Edit</button> <button class="danger" onclick="delTx('${t.id}')">Delete</button></div></div>`}
+function populateYears(){let ys=[...new Set(tx.map(t=>t.date?.slice(0,4)).filter(Boolean))].sort().reverse(),y=new Date().getFullYear().toString();if(!ys.includes(y))ys.unshift(y);let cur=$("reportYear").value||y;$("reportYear").innerHTML=ys.map(x=>`<option>${x}</option>`).join("");$("reportYear").value=ys.includes(cur)?cur:y}
+function openTx(id=null){if(!people.length)return alert("Add a firefighter first.");editing=id;dir="you";$("modalTitle").textContent=id?"Edit PCOS":"Add PCOS";$("txForm").classList.remove("hidden");$("personForm").classList.add("hidden");$("editPersonForm").classList.add("hidden");let t=id?tx.find(x=>x.id===id):null;let p=t?people.find(x=>x.id===t.personId):people[0];$("person").value=p?.id||"";$("personButton").textContent=p?.name||"Search firefighter…";$("date").value=t?.date||new Date().toISOString().slice(0,10);setStation(t?.station||p?.station||"");dir=t?.dir||"you";setDir(dir);$("hours").value=t?.hours||24;$("notes").value=t?.notes||"";updateHoursPreview();$("modal").classList.remove("hidden")}
+function openTxFor(id){openTx();$("person").value=id;let p=people.find(x=>x.id===id);$("personButton").textContent=p?.name||"Search firefighter…";setStation(p?.station||"")}
+function closeModal(){$("modal").classList.add("hidden")}
+function setDir(d){dir=d;$("youBtn").classList.toggle("selected",d==="you");$("themBtn").classList.toggle("selected",d==="them")}
+function setHours(h){$("hours").value=h;updateHoursPreview()}
+function focusCustomHours(){$("hours").focus()}
+function updateHoursPreview(){let h=parseFloat($("hours").value)||0;$("hoursPreview").textContent=`${h} hours = ${Math.round((h/24)*100)/100} shift(s)`}
+function saveTx(){let p=people.find(x=>x.id===$("person").value),h=parseFloat($("hours").value);if(!p||!h||h<=0)return alert("Select a firefighter and enter valid hours.");let o={personId:p.id,date:$("date").value,station:$("station").value,hours:h,dir,notes:$("notes").value.trim()};if(editing)Object.assign(tx.find(x=>x.id===editing),o);else tx.unshift({id:crypto.randomUUID(),...o});save();closeModal();render()}
+function delTx(id){if(confirm("Delete this PCOS record?")){tx=tx.filter(t=>t.id!==id);save();render()}}
+function openPerson(){addingPersonFromTx=false;editing=null;$("modalTitle").textContent="Add firefighter";$("txForm").classList.add("hidden");$("personForm").classList.remove("hidden");$("editPersonForm").classList.add("hidden");$("pname").value="";$("pservice").value="";$("pphone").value="";setStation("", "new");$("modal").classList.remove("hidden")}
+function addPersonFromTx(){addingPersonFromTx=true;openPerson()}
+function savePerson(){let n=$("pname").value.trim();if(!n)return alert("Enter a name.");let p={id:crypto.randomUUID(),name:n,service:$("pservice").value.trim(),phone:$("pphone").value.trim(),station:$("pstation").value};people.push(p);save();closeModal();if(addingPersonFromTx){addingPersonFromTx=false;openTx();$("person").value=p.id;$("personButton").textContent=p.name;setStation(p.station)}else render()}
+function editPerson(id){let p=people.find(x=>x.id===id);if(!p)return;editing=id;$("modalTitle").textContent="Edit firefighter";$("txForm").classList.add("hidden");$("personForm").classList.add("hidden");$("editPersonForm").classList.remove("hidden");$("epname").value=p.name;$("epservice").value=p.service||"";$("epphone").value=p.phone||"";setStation(p.station||"","edit");$("modal").classList.remove("hidden")}
+function saveEditedPerson(){let p=people.find(x=>x.id===editing),n=$("epname").value.trim();if(!p||!n)return alert("Enter a name.");p.name=n;p.service=$("epservice").value.trim();p.phone=$("epphone").value.trim();p.station=$("epstation").value;save();closeModal();render()}
+function setStation(v,mode="tx"){if(mode==="tx"){$("station").value=v;$("stationButton").textContent=stationName(v)||"Search station…"}if(mode==="new"){$("pstation").value=v;$("pstationButton").textContent=stationName(v)||"Search station…"}if(mode==="edit"){$("epstation").value=v;$("epstationButton").textContent=stationName(v)||"Search station…"}}
+function openStationPicker(mode){pickerMode=mode;$("pickerSearch").value="";$("pickerSearch").placeholder="Search station number or name…";$("pickerPanel").classList.remove("hidden");renderStationResults();$("pickerSearch").focus()}
+function renderStationResults(){let q=$("pickerSearch").value.toLowerCase().trim(),a=S.filter(x=>(x[0]+" "+x[1]).toLowerCase().includes(q)).slice(0,100);$("pickerResults").innerHTML=a.map(x=>`<div class="searchResult" onclick="chooseStation('${x[0]}|${x[1]}')"><b>${x[0]}</b> — ${esc(x[1])}</div>`).join("")||'<div class="empty">No stations found</div>'}
+function chooseStation(v){setStation(v,pickerMode);closePicker()}
+function openPersonPicker(){pickerMode="person";$("pickerSearch").value="";$("pickerSearch").placeholder="Search name or service number…";$("pickerPanel").classList.remove("hidden");renderPersonResults();$("pickerSearch").focus()}
+function renderPersonResults(){let q=$("pickerSearch").value.toLowerCase().trim(),a=people.filter(p=>(p.name+" "+(p.service||"")).toLowerCase().includes(q));$("pickerResults").innerHTML=a.map(p=>`<div class="searchResult" onclick="choosePerson('${p.id}')"><b>${esc(p.name)}</b><div class="small muted">${esc(p.service||"No service number")} · ${esc(stationName(p.station)||"No station")}</div></div>`).join("")||'<div class="empty">No firefighters found</div>'}
+function choosePerson(id){let p=people.find(x=>x.id===id);$("person").value=id;$("personButton").textContent=p?.name||"Search firefighter…";if(p&&!$("station").value)setStation(p.station);closePicker()}
+function closePicker(){$("pickerPanel").classList.add("hidden");pickerMode=null}
+function messageFromTx(){let p=people.find(x=>x.id===$("person").value);if(!p?.phone)return alert("No mobile number saved for this firefighter.");let msg=`PCOS: ${$("date").value} · ${stationName($("station").value)} · ${$("hours").value} hours`;location.href="sms:"+p.phone.replace(/[^0-9+]/g,"")+"?body="+encodeURIComponent(msg)}
+function showPerson(id){let p=people.find(x=>x.id===id),rows=tx.filter(t=>t.personId===id);$("detailTitle").textContent=p.name;$("detailBody").innerHTML=`<div class="card"><b>${esc(p.name)}</b><div class="small muted">Service: ${esc(p.service||"—")}</div><div class="small muted">${esc(stationName(p.station)||"No station")}</div><div class="small muted">${esc(p.phone||"No mobile")}</div><h2>${fmt(balances()[id]||0)}</h2>${p.phone?`<button style="width:100%" onclick="location.href='sms:${p.phone}'">💬 Text ${esc(p.name)}</button>`:""}</div><h3>PCOS history</h3>${rows.map(item).join("")||'<div class="empty">No records</div>'}`;$("detail").classList.remove("hidden")}
+function closeDetail(){$("detail").classList.add("hidden")}
+function openSettings(){$("settings").classList.remove("hidden")}function closeSettings(){$("settings").classList.add("hidden")}
+function resetDemo(){if(confirm("Replace current data with placeholder data?")){people=demoPeople();tx=[];save();closeSettings();render()}}
+function clearFilters(){$("q").value="";$("from").value="";$("to").value="";render()}function setThisYear(){let y=new Date().getFullYear();$("from").value=y+"-01-01";$("to").value=y+"-12-31";render()}
+function exportJSON(){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify({version:3,people,tx},null,2)],{type:"application/json"}));a.download="pcos-ledger-backup.json";a.click()}
+function exportCSV(){let rows=[["Date","Firefighter","Service Number","Station","Hours","Direction","Notes"],...tx.map(t=>{let p=people.find(x=>x.id===t.personId);return[t.date,p?.name||"",p?.service||"",stationName(t.station),t.hours,t.dir==="you"?"You worked":"They worked",t.notes||""]})];let csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(",")).join("\\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="pcos-ledger.csv";a.click()}
+function importJSON(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.people)||!Array.isArray(x.tx))throw 0;people=x.people;tx=x.tx;save();render();alert("Backup restored.")}catch{alert("Backup could not be read.")}};r.readAsText(f)}
+$("pickerSearch").addEventListener("input",()=>pickerMode==="person"?renderPersonResults():renderStationResults());load();showPage("home");
+</script></body></html>
