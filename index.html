@@ -3,7 +3,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#111">
 <link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
-<title>PCOS Ledger V15 SAFE</title>
+<title>PCOS Ledger Diagnostic</title>
 <style>
 :root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
 *{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#111}.app{max-width:760px;margin:auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(20px + env(safe-area-inset-bottom))}
@@ -56,6 +56,20 @@ label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{widt
 
 <div id="pickerPanel" class="searchPanel hidden"><div class="searchTop"><button onclick="closePicker()">Cancel</button><input id="pickerSearch" placeholder="Search…"></div><div id="pickerResults"></div></div>
 
+
+<div id="jsError" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;background:#fff0f0;border:2px solid #b42318;border-radius:12px;padding:12px;font:14px -apple-system,BlinkMacSystemFont,sans-serif;color:#7a1010">
+<b>PCOS Ledger diagnostic</b><div id="jsErrorText" style="margin-top:5px;word-break:break-word"></div>
+</div>
+<script>
+(function(){
+ function show(msg){
+   var b=document.getElementById("jsError"),t=document.getElementById("jsErrorText");
+   if(b&&t){b.style.display="block";t.textContent=msg;}
+ }
+ window.addEventListener("error",function(e){show((e.message||"JavaScript error")+" — line "+(e.lineno||"?"));});
+ window.addEventListener("unhandledrejection",function(e){show("Unhandled promise error: "+(e.reason&&e.reason.message?e.reason.message:e.reason));});
+})();
+</script>
 <script>
 const S=[
 ["001","City of Sydney"],["003","The Rocks"],["004","Darlinghurst"],["005","Newtown"],["006","Mona Vale"],["008","Liverpool"],["010","Redfern"],["011","Woollahra"],["012","Balmain"],["013","Alexandria"],["014","Ashfield"],["015","Burwood"],["016","Concord"],["017","Drummoyne"],["018","Glebe"],["019","Silverwater"],["020","Hurstville"],["021","Kogarah"],["022","Leichhardt"],["023","Gladesville"],["024","Manly"],["025","Mosman"],["026","Mascot"],["027","Parramatta"],["028","Marrickville"],["029","Arncliffe"],["030","Lidcombe"],["032","Mount Druitt"],["033","Engadine"],["034","Riverwood"],["035","Botany"],["036","Crows Nest"],["037","Gordon"],["038","Pyrmont"],["039","Randwick"],["040","Willoughby"],["041","Smithfield"],["042","Ryde"],["043","Seven Hills"],["045","Miranda"],["046","Sutherland"],["047","Revesby"],["049","Cabramatta"],["050","Hornsby"],["052","Campsie"],["053","Neutral Bay"],["054","Cronulla"],["055","Guildford"],["056","Matraville"],["057","Wentworthville"],["058","Beecroft"],["059","Eastwood"],["060","Avalon"],["061","Lane Cove"],["062","Bankstown"],["063","Blacktown"],["064","Lakemba"],["065","Rydalmere"],["067","Baulkham Hills"],["068","Narrabeen"],["069","Dee Why"],["070","Maroubra"],["071","Castle Hill"],["072","Merrylands"],["075","Berowra"],["076","Bondi"],["077","St Marys"],["079","Ingleburn"],["080","Bundeena"],["081","Windsor"],["082","Richmond"],["083","Riverstone"],["084","Macquarie Fields"],["086","Penrith"],["087","Rosemeadow"],["088","Campbelltown"],["090","Menai"],["092","St Andrews"],["093","Narellan"],["094","Kellyville"],["095","Oran Park"],["096","Schofields"],["097","Huntingwood"],["203","Albury"],["216","Bathurst"],["217","Batemans Bay"],["218","Batlow"],["219","Bega"],["220","Bellbird"],["221","Bellingen"],["222","Belmont"],["224","Berry"],["226","Blackheath"],["227","Blayney"],["232","Boorowa"],["233","Bourke"],["234","Bowral"],["235","Bowraville"],["236","Braidwood"],["237","Branxton Greta"],["238","Broken Hill"],["241","Bulli"],["242","Bundanoon"],["243","Byron Bay"],["244","Brewarrina"],["248","Camden"],["250","Canowindra"],["251","Cardiff"],["252","Carrington"],["253","Casino"],["254","Cessnock"],["255","Charlestown"],["256","Cobar"],["257","Coffs Harbour"],["258","Coledale"],["259","Condobolin"],["260","Newcastle"],["261","Coolah"],["262","Coolamon"],["263","Cooma"],["264","Coonabarabran"],["265","Coonamble"],["266","Cootamundra"],["267","Coraki"],["268","Corowa"],["269","Corrimal"],["270","Cowra"],["271","Crookwell"],["272","Culcairn"],["277","Dapto"],["278","Deniliquin"],["279","Dorrigo"],["280","Dubbo"],["281","Dunedoo"],["282","Dungog"],["286","Eden"],["288","Evans Head"],["292","Doyalson"],["293","Finley"],["294","Forbes"],["295","Forster"],["300","Gilgandra"],["301","Glenbrook"],["302","Glen Innes"],["303","Gloucester"],["304","Gosford"],["305","Goulburn"],["306","Grafton"],["307","South Grafton"],["308","Grenfell"],["311","Griffith"],["312","Gulgong"],["313","Gundagai"],["314","Gunnedah"],["315","Guyra"],["316","Goonellabah"],["321","Hay"],["322","Henty"],["323","Hillston"],["324","Holbrook"],["325","Helensburgh"],["331","Inverell"],["336","Jerilderie"],["337","Junee"],["338","Jindabyne"],["340","Umina"],["341","Kariong"],["342","Kandos"],["343","Katoomba"],["344","Kearsley"],["345","Kempsey"],["346","Kiama"],["347","Kingscliff"],["349","Kurri Kurri"],["350","Kyogle"],["351","Bateau Bay"],["353","Kincumber"],["355","Lake Cargelligo"],["357","Lambton"],["358","Laurieton"],["359","Lawson"],["360","Leeton"],["361","Leura"],["362","Lismore"],["363","Lithgow"],["365","Lockhart"],["367","Lightning Ridge"],["371","Macksville"],["372","Maclean"],["373","East Maitland"],["374","Maitland"],["375","Manilla"],["376","Merewether"],["377","Minmi"],["378","Mittagong"],["379","Moama"],["380","Molong"],["381","Moree"],["382","Morpeth"],["383","Morisset"],["384","Moruya"],["385","Moss Vale"],["386","Mt Victoria"],["387","Mudgee"],["388","Mullumbimby"],["390","Murrurundi"],["391","Murwillumbah"],["392","Muswellbrook"],["393","Merriwa"],["394","Mulwala"],["395","Merimbula"],["397","Nambucca Heads"],["398","Narooma"],["399","Narrabri"],["400","Narrandera"],["401","Narromine"],["402","Salamander Bay"],["405","Nowra"],["406","Nyngan"],["411","Oberon"],["412","Orange"],["417","Parkes"],["418","Paxton"],["419","Peak Hill"],["421","Picton"],["422","Warrawong"],["423","Portland"],["424","Port Macquarie"],["426","Perisher Valley"],["428","Queanbeyan"],["429","Quirindi"],["432","Raymond Terrace"],["434","Hamlyn Terrace"],["440","Shoalhaven"],["441","Sawtell"],["442","Scarborough"],["443","Scone"],["444","Singleton"],["445","Springwood"],["446","Stockton"],["447","Swansea"],["448","South Tamworth"],["449","South West Rocks"],["450","Saratoga"],["451","Thredbo"],["452","Tamworth"],["453","Taree"],["454","Tarro"],["455","Rutherford"],["456","Temora"],["457","Tenterfield"],["458","Teralba"],["459","Terrigal"],["460","The Entrance"],["461","Thirroul"],["462","Mayfield West"],["463","Tocumwal"],["464","Toronto"],["465","Trangie"],["466","Tumbarumba"],["467","Tumut"],["468","Tweed Heads"],["470","Toukley"],["471","Tea Gardens"],["472","Turvey Park"],["474","Unanderra"],["475","Uralla"],["476","Urunga"],["477","Ulladulla"],["480","Wagga Wagga"],["481","Walcha"],["482","Walgett"],["483","Wallerawang"],["484","Wallsend"],["485","Wangi Wangi"],["487","Warialda"],["488","Shellharbour"],["489","Warragamba"],["491","Warren"],["492","Wauchope"],["493","Wellington"],["494","Wentworth"],["495","Wentworth Falls"],["496","Werris Creek"],["498","Holmesville"],["499","West Wyalong"],["500","Tingira Heights"],["502","Wingham"],["503","Wollongong"],["505","Wyong"],["506","Wee Waa"],["507","Woolgoolga"],["509","Wyoming"],["510","Yamba"],["511","Yass"],["512","Yenda"],["513","Young"],["514","Banora Point"]];
@@ -120,18 +134,4 @@ function exportJSON(){let a=document.createElement("a");a.href=URL.createObjectU
 function exportCSV(){let rows=[["Date","Firefighter","Service Number","Station","Hours","Direction","Notes"],...tx.map(t=>{let p=people.find(x=>x.id===t.personId);return[t.date,p?.name||"",p?.service||"",stationName(t.station),t.hours,t.dir==="you"?"You worked":"They worked",t.notes||""]})];let csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(",")).join("\\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="pcos-ledger.csv";a.click()}
 function importJSON(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.people)||!Array.isArray(x.tx))throw 0;people=x.people;tx=x.tx;save();render();alert("Backup restored.")}catch{alert("Backup could not be read.")}};r.readAsText(f)}
 $("pickerSearch").addEventListener("input",()=>pickerMode==="person"?renderPersonResults():renderStationResults());load();showPage("home");
-</script>
-<div id="jsError" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:99999;background:#fff0f0;border:2px solid #b42318;border-radius:12px;padding:12px;font:14px -apple-system,BlinkMacSystemFont,sans-serif;color:#7a1010">
-<b>PCOS Ledger error</b><div id="jsErrorText" style="margin-top:5px;word-break:break-word"></div>
-</div>
-<script>
-window.addEventListener("error",function(e){
- var b=document.getElementById("jsError"),t=document.getElementById("jsErrorText");
- if(b&&t){b.style.display="block";t.textContent=(e.message||"Unknown JavaScript error")+" (line "+(e.lineno||"?")+")";}
-});
-window.addEventListener("unhandledrejection",function(e){
- var b=document.getElementById("jsError"),t=document.getElementById("jsErrorText");
- if(b&&t){b.style.display="block";t.textContent="Unhandled error: "+(e.reason?.message||e.reason||"unknown");}
-});
-</script>
-</body></html>
+</script></body></html>
