@@ -47,6 +47,23 @@ label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{widt
 .statGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .statCard{padding:14px;border-radius:14px;background:#f1f1f3}
 .searchPanel{box-sizing:border-box;width:100vw;height:100dvh;padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:calc(20px + env(safe-area-inset-bottom))}.searchPanel .top{z-index:2}.searchResult{min-height:54px;box-sizing:border-box}
+ 
+/* V12 refinement */
+body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:40;margin:0;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #ddd;display:flex;gap:6px;box-shadow:0 -2px 12px #0001}
+nav button{flex:1;min-height:48px;border-radius:12px}
+.card{border-radius:16px}
+button,input,select,textarea{min-height:44px}
+.actions{gap:8px}
+.actions button{flex:1}
+.inputLike{background:#fff;border:1px solid #c8c8cc;border-radius:10px;padding:10px 12px;min-height:44px}
+.primary.bigAction{min-height:54px;font-size:18px}
+.balance .big{font-size:42px}
+.dashboardStats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dashboardStat{padding:14px;border-radius:16px;background:#f1f1f3}
+.dashboardStat .value{font-size:22px;font-weight:700;margin-top:4px}
+.empty{padding:22px 8px;text-align:center;color:#777}
+@media (min-width:700px){body{max-width:760px;margin:auto}}
 </style></style>
 </head>
 <body>
@@ -62,6 +79,10 @@ label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{widt
 </nav>
 
 <section id="home" class="page">
+<div class="dashboardStats">
+<div class="dashboardStat"><div class="small muted">THEY OWE ME</div><div id="dashOweMe" class="value pos">0 hrs</div></div>
+<div class="dashboardStat"><div class="small muted">I OWE THEM</div><div id="dashIOwe" class="value neg">0 hrs</div></div>
+</div>
 <div class="card balance"><div class="eyebrow">MY NET BALANCE</div><div id="net" class="big">0 hrs</div><div id="netShift" class="secondary">0 shifts</div></div>
 <div class="grid2">
 <div class="stat"><div class="muted small">THEY OWE ME</div><b id="owed">0 hrs</b></div>
@@ -399,6 +420,14 @@ function fmt(h){let sign=h>0?'+':h<0?'−':'';let a=Math.abs(h);let s=a/24;let h
 function shift(h){let s=h/24;return `${s>0?'+':s<0?'−':''}${Math.abs(s).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')} shifts`}
 function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function item(t){let p=people.find(x=>x.id===t.personId),v=t.dir==='you'?t.hours:-t.hours;return `<div class="row"><div><div class="name">${esc(p?.name||'Unknown')}</div><div class="small muted">${esc(stationName(t.station)||t.station||'—')} · ${esc(t.date)}</div><div class="small muted">${t.dir==='you'?'You worked':'They worked'} · ${t.hours} hrs${t.notes?' · '+esc(t.notes):''}</div></div><div style="text-align:right"><div class="${v>0?'pos':'neg'}">${fmt(v)}</div><div class="small muted">${shift(v)}</div><div style="margin-top:5px"><button class="small" onclick="openTx('${t.id}')">Edit</button> <button class="small danger" onclick="delTx('${t.id}')">Delete</button></div></div></div>`}
+
+function updateDashboardStats(){
+  let oweMe=tx.filter(t=>t.dir==='you').reduce((a,t)=>a+t.hours,0);
+  let iOwe=tx.filter(t=>t.dir==='them').reduce((a,t)=>a+t.hours,0);
+  if($('dashOweMe'))$('dashOweMe').textContent=fmt(oweMe);
+  if($('dashIOwe'))$('dashIOwe').textContent=fmt(iOwe);
+}
+
 function render(){let b=balances(),net=tx.reduce((n,t)=>n+(t.dir==='you'?t.hours:-t.hours),0),owed=Object.values(b).filter(x=>x>0).reduce((a,x)=>a+x,0),owe=-Object.values(b).filter(x=>x<0).reduce((a,x)=>a+x,0);
 $('net').textContent=fmt(net);$('netShift').textContent=shift(net);$('owed').textContent=fmt(owed);$('owe').textContent=fmt(owe);
 $('outstanding').innerHTML=people.map(p=>({p,h:b[p.id]||0})).filter(x=>x.h!==0).sort((a,z)=>z.h-a.h).map(x=>`<div class="row balanceTap" onclick="showPerson('${x.p.id}')"><div><div class="name">${esc(x.p.name)}</div><div class="small muted">${esc(x.p.station)}</div></div><div class="${x.h>0?'pos':'neg'}">${fmt(x.h)}<div class="small">${shift(x.h)}</div></div></div>`).join('')||'<div class="empty">No outstanding balances</div>';
@@ -476,9 +505,10 @@ function renderReportYear(){
 if(window.navigator.standalone===false || /iPhone|iPad|iPod/.test(navigator.userAgent)) $('installHint').classList.remove('hidden');
 
 const originalRender=render;
-render=function(){originalRender();renderReportYear()}
+render=function(){originalRender();renderReportYear();updateDashboardStats()}
 
 render();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('pickerPanel').classList.contains('hidden'))closePicker()});
 document.addEventListener('input',e=>{if(e.target.id==='pickerSearch'){if(pickerMode==='person')renderPersonResults();else renderStationResults()}});
 </script>
 <div id="pickerPanel" class="searchPanel hidden">
