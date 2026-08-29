@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>PCOS Ledger</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:#f5f5f7;color:#111}
+.app{max-width:760px;margin:auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+h1{font-size:29px;margin:0}.sub{color:#707070;font-size:14px;margin-top:2px}
+.card{background:#fff;border-radius:18px;padding:17px;margin:11px 0;box-shadow:0 1px 4px #0001}
+.balance{text-align:center;padding:22px 16px}.eyebrow{font-size:12px;letter-spacing:.08em;color:#777;font-weight:700}
+.big{font-size:40px;font-weight:800;margin:5px 0}.secondary{color:#666}
+nav{position:sticky;top:0;z-index:3;background:#f5f5f7;padding:5px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+button{border:0;border-radius:12px;padding:11px 10px;font:inherit;background:#e9e9ee;cursor:pointer}
+button.primary{background:#111;color:white;font-weight:700}.accent{background:#eef6ff;color:#135ba1;font-weight:700}.primary .small{opacity:.85}.settle{background:#e9f7ed;color:#176b35;font-weight:700}.confirm{background:#fff4d6;color:#7a5200;font-weight:700}.selected{background:#111;color:#fff}
+button.danger{background:#fbe4e4;color:#a30000}.fab{width:100%;font-size:17px;margin:4px 0 14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat{padding:15px;border-radius:14px;background:#f7f7f8}
+.stat b{font-size:22px;display:block;margin-top:3px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #eee}.row:last-child{border-bottom:0}
+.name{font-weight:700}.muted{color:#777}.small{font-size:12px}.pos{color:#087a35;font-weight:700}.neg{color:#b42318;font-weight:700}
+label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{width:100%;font:inherit;padding:12px;border:1px solid #d1d1d6;border-radius:11px;background:#fff}textarea{min-height:75px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.actions{display:flex;gap:8px;margin-top:15px}.actions button{flex:1}
+.filter{display:grid;grid-template-columns:1fr 1fr;gap:8px}.empty{text-align:center;color:#777;padding:24px 10px}
+.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:flex-end;z-index:10}.sheet{background:#fff;width:100%;max-width:760px;margin:auto;border-radius:22px 22px 0 0;padding:18px;max-height:90vh;overflow:auto}
+.hidden{display:none!important}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eee;font-size:12px}
+.footer{color:#888;text-align:center;font-size:11px;margin-top:18px}
+@media(min-width:600px){.modal{align-items:center}.sheet{border-radius:20px}}
+
+.install{background:#111;color:#fff;border-radius:14px;padding:12px;margin:10px 0;font-weight:700}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));background:#111;color:#fff;padding:13px 16px;border-radius:14px;z-index:20;text-align:center;box-shadow:0 4px 18px #0004}
+.balanceTap{cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><h1>PCOS Ledger</h1><div class="sub">Part Change of Shift tracker</div></div><button onclick="openSettings()">⚙︎</button></header>
+
+<div id="installHint" class="install hidden">Tip: in Safari, use Share → Add to Home Screen to install PCOS Ledger.</div>
+<nav>
+<button onclick="show('home')" id="nhome">Balance</button>
+<button onclick="show('history')" id="nhistory">PCOS</button>
+<button onclick="show('people')" id="npeople">People</button>
+<button onclick="show('reports')" id="nreports">Reports</button>
+</nav>
+
+<section id="home" class="page">
+<div class="card balance"><div class="eyebrow">MY NET BALANCE</div><div id="net" class="big">0 hrs</div><div id="netShift" class="secondary">0 shifts</div></div>
+<div class="grid2">
+<div class="stat"><div class="muted small">THEY OWE ME</div><b id="owed">0 hrs</b></div>
+<div class="stat"><div class="muted small">I OWE THEM</div><b id="owe">0 hrs</b></div>
+</div>
+<button class="primary fab" onclick="openTx()">＋ Add PCOS</button>
+<div class="card"><h3>Outstanding balances</h3><div id="outstanding"></div></div>
+<div class="card"><h3>Recent PCOS</h3><div id="recent"></div></div>
+</section>
+
+<section id="history" class="page hidden">
+<div class="card"><input id="q" placeholder="Search firefighter, station or notes" oninput="render()"><div class="filter" style="margin-top:9px"><input id="from" type="date" onchange="render()"><input id="to" type="date" onchange="render()"></div>
+<div class="actions"><button onclick="clearFilters()">Clear filters</button><button onclick="setThisYear()">This year</button></div></div>
+<div class="card"><div id="historyList"></div></div>
+</section>
+
+<section id="people" class="page hidden">
+<div class="card"><h3>Firefighters</h3><div id="peopleList"></div></div>
+<button class="primary fab" onclick="openPerson()">＋ Add firefighter</button>
+</section>
+
+<section id="reports" class="page hidden">
+<div class="card"><label>Report year</label><select id="reportYear" onchange="render()"></select></div><div class="card"><h3>PCOS Summary</h3><div id="reportSubtitle" class="small muted"></div><div class="grid2">
+<div class="stat"><div class="muted small">TRANSACTIONS</div><b id="rCount">0</b></div>
+<div class="stat"><div class="muted small">NET HOURS</div><b id="rNet">0</b></div>
+<div class="stat"><div class="muted small">YOU WORKED</div><b id="rYou">0</b></div>
+<div class="stat"><div class="muted small">THEY WORKED</div><b id="rThem">0</b></div>
+</div></div>
+<div class="card"><h3>By firefighter</h3><div id="reportPeople"></div></div>
+<div class="card"><h3>Data</h3><div class="actions"><button onclick="exportCSV()">Export CSV</button><button onclick="exportJSON()">Backup</button></div><label>Restore backup</label><input type="file" accept=".json,application/json" onchange="importJSON(event)"></div>
+</section>
+
+<div id="modal" class="modal hidden"><div class="sheet">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="modalTitle">Add PCOS</h2><button onclick="closeModal()">✕</button></div>
+<div id="txForm">
+<label>Firefighter</label><select id="person"></select>
+<label>Date</label><input id="date" type="date">
+<label>Location / Station</label><input id="station" placeholder="e.g. Burwood">
+<label>Who worked the shift?</label><div class="actions"><button id="youBtn" class="selected" onclick="setDir('you')">You worked</button><button id="themBtn" onclick="setDir('them')">They worked</button></div>
+<label>Hours</label>
+<div class="grid2">
+<button class="primary" onclick="setHours(24)">1 SHIFT<br><span class="small">24 hours</span></button>
+<button class="accent" onclick="focusCustomHours()">CUSTOM HOURS</button>
+</div>
+<input id="hours" type="number" min=".25" step=".25" value="24" style="margin-top:8px" oninput="updateHoursPreview()">
+<div id="hoursPreview" class="small muted" style="margin-top:5px"></div>
+<details style="margin-top:10px"><summary class="small muted" style="cursor:pointer">More options: fractional shift</summary>
+<div class="quick" style="margin-top:8px">
+<button onclick="setHours(12)">½ shift<br><span class="small">12h</span></button>
+<button onclick="setHours(18)">¾ shift<br><span class="small">18h</span></button>
+<button onclick="setHours(6)">¼ shift<br><span class="small">6h</span></button>
+</div></details>
+<label>Notes</label><textarea id="notes" placeholder="Optional"></textarea>
+<div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveTx()">Save</button></div>
+</div>
+<div id="personForm" class="hidden">
+<label>Name</label><input id="pname" placeholder="e.g. Alex Morgan">
+<label>Default station</label><input id="pstation" placeholder="e.g. Burwood">
+<div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="savePerson()">Save</button></div>
+</div>
+</div></div>
+
+
+<div id="detail" class="modal hidden"><div class="sheet">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="detailTitle">Balance</h2><button onclick="closeDetail()">✕</button></div>
+<div id="detailBody"></div>
+</div></div>
+<div id="settings" class="modal hidden"><div class="sheet">
+<div style="display:flex;justify-content:space-between"><h2>Settings</h2><button onclick="closeSettings()">✕</button></div>
+<p class="muted">Version 5 prototype. Full 24-hour shift is the primary entry; custom hours is the second option. Balances are calculated from transaction history; settlement creates a normal historical transaction. Data is stored locally in this browser.</p>
+<button class="danger" style="width:100%" onclick="resetDemo()">Reset to placeholder data</button>
+</div></div>
+<div class="footer">PCOS Ledger V2 · local prototype</div>
+</div>
+
+<script>
+const KEY1='pcos_v2_people',KEY2='pcos_v2_tx';
+let people=JSON.parse(localStorage.getItem(KEY1)||'null');
+let tx=JSON.parse(localStorage.getItem(KEY2)||'null');
+let editing=null,dir='you';
+function demo(){return [{id:'p1',name:'Alex Morgan',station:'Burwood'},{id:'p2',name:'Taylor Smith',station:'Drummoyne'},{id:'p3',name:'Jordan Lee',station:'Burwood'},{id:'p4',name:'Casey Brown',station:'Redfern'}]}
+function demoTx(){return [
+{id:'t1',personId:'p1',date:'2026-08-28',station:'Burwood',hours:24,dir:'you',notes:'Example PCOS'},
+{id:'t2',personId:'p1',date:'2026-08-14',station:'Burwood',hours:12,dir:'them',notes:'Example PCOS'},
+{id:'t3',personId:'p2',date:'2026-08-10',station:'Drummoyne',hours:24,dir:'you',notes:'Example PCOS'},
+{id:'t4',personId:'p3',date:'2026-07-30',station:'Burwood',hours:8,dir:'them',notes:'Example PCOS'}]}
+if(!people){people=demo();tx=demoTx();persist()}
+const $=id=>document.getElementById(id);
+function persist(){localStorage.setItem(KEY1,JSON.stringify(people));localStorage.setItem(KEY2,JSON.stringify(tx))}
+function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');render();scrollTo(0,0)}
+function openTx(id=null){if(!people.length)return alert('Add a firefighter first.');editing=id; $('modalTitle').textContent=id?'Edit PCOS':'Add PCOS';$('txForm').classList.remove('hidden');$('personForm').classList.add('hidden');let s=$('person');s.innerHTML=people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+if(id){let t=tx.find(x=>x.id===id);$('person').value=t.personId;$('date').value=t.date;$('station').value=t.station;$('hours').value=t.hours;$('notes').value=t.notes||'';setDir(t.dir);updateHoursPreview()}else{$('date').value=new Date().toISOString().slice(0,10);$('station').value=people[0]?.station||'';$('hours').value=24;$('notes').value='';setDir('you');updateHoursPreview()}$('modal').classList.remove('hidden')}
+function openPerson(){editing=null;$('modalTitle').textContent='Add firefighter';$('txForm').classList.add('hidden');$('personForm').classList.remove('hidden');$('pname').value='';$('pstation').value='';$('modal').classList.remove('hidden')}
+function closeModal(){$('modal').classList.add('hidden')}
+function setDir(x){dir=x;$('youBtn').classList.toggle('selected',x==='you');$('themBtn').classList.toggle('selected',x==='them')}
+function setHours(h){$('hours').value=h;updateHoursPreview()}\nfunction focusCustomHours(){$("hours").focus();$("hours").select()}
+function savePerson(){let n=$('pname').value.trim();if(!n)return alert('Enter a name.');people.push({id:crypto.randomUUID(),name:n,station:$('pstation').value.trim()});persist();closeModal();render()}
+function saveTx(){let p=people.find(x=>x.id===$('person').value),h=parseFloat($('hours').value);if(!p||!h||h<=0)return alert('Enter valid details.');let obj={personId:p.id,date:$('date').value,station:$('station').value.trim(),hours:h,dir,notes:$('notes').value.trim()};if(editing){Object.assign(tx.find(x=>x.id===editing),obj)}else{tx.unshift({id:crypto.randomUUID(),...obj})}persist();closeModal();render()}
+function delTx(id){if(confirm('Delete this PCOS record?')){tx=tx.filter(t=>t.id!==id);persist();render()}}
+function delPerson(id){if(tx.some(t=>t.personId===id))return alert('This firefighter has PCOS records. Delete the records first, or keep the firefighter.');if(confirm('Delete this firefighter?')){people=people.filter(p=>p.id!==id);persist();render()}}
+function balances(){let b={};tx.forEach(t=>b[t.personId]=(b[t.personId]||0)+(t.dir==='you'?t.hours:-t.hours));return b}
+function fmt(h){let sign=h>0?'+':h<0?'−':'';let a=Math.abs(h);let s=a/24;let hs=Number.isInteger(a)?a:a.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');let ss=Number.isInteger(s)?s:s.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');return `${sign}${hs} hrs`}
+function shift(h){let s=h/24;return `${s>0?'+':s<0?'−':''}${Math.abs(s).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')} shifts`}
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function item(t){let p=people.find(x=>x.id===t.personId),v=t.dir==='you'?t.hours:-t.hours;return `<div class="row"><div><div class="name">${esc(p?.name||'Unknown')}</div><div class="small muted">${esc(t.station||'—')} · ${esc(t.date)}</div><div class="small muted">${t.dir==='you'?'You worked':'They worked'} · ${t.hours} hrs${t.notes?' · '+esc(t.notes):''}</div></div><div style="text-align:right"><div class="${v>0?'pos':'neg'}">${fmt(v)}</div><div class="small muted">${shift(v)}</div><div style="margin-top:5px"><button class="small" onclick="openTx('${t.id}')">Edit</button> <button class="small danger" onclick="delTx('${t.id}')">Delete</button></div></div></div>`}
+function render(){let b=balances(),net=tx.reduce((n,t)=>n+(t.dir==='you'?t.hours:-t.hours),0),owed=Object.values(b).filter(x=>x>0).reduce((a,x)=>a+x,0),owe=-Object.values(b).filter(x=>x<0).reduce((a,x)=>a+x,0);
+$('net').textContent=fmt(net);$('netShift').textContent=shift(net);$('owed').textContent=fmt(owed);$('owe').textContent=fmt(owe);
+$('outstanding').innerHTML=people.map(p=>({p,h:b[p.id]||0})).filter(x=>x.h!==0).sort((a,z)=>z.h-a.h).map(x=>`<div class="row balanceTap" onclick="showPerson('${x.p.id}')"><div><div class="name">${esc(x.p.name)}</div><div class="small muted">${esc(x.p.station)}</div></div><div class="${x.h>0?'pos':'neg'}">${fmt(x.h)}<div class="small">${shift(x.h)}</div></div></div>`).join('')||'<div class="empty">No outstanding balances</div>';
+$('recent').innerHTML=tx.slice(0,6).map(item).join('')||'<div class="empty">No PCOS recorded</div>';
+let q=($('q')?.value||'').toLowerCase(),f=$('from')?.value||'',to=$('to')?.value||'';let list=tx.filter(t=>{let p=people.find(x=>x.id===t.personId);return (!q||`${p?.name} ${t.station} ${t.notes}`.toLowerCase().includes(q))&&(!f||t.date>=f)&&(!to||t.date<=to)});$('historyList').innerHTML=list.map(item).join('')||'<div class="empty">No matching records</div>';
+$('peopleList').innerHTML=people.map(p=>{let h=b[p.id]||0;return `<div class="row"><div><div class="name">${esc(p.name)}</div><div class="small muted">${esc(p.station)}</div></div><div style="text-align:right"><div class="${h>0?'pos':h<0?'neg':''}">${fmt(h)}</div><button class="small danger" onclick="delPerson('${p.id}')">Delete</button></div></div>`}).join('')||'<div class="empty">No firefighters</div>';
+$('rCount').textContent=tx.length;$('rNet').textContent=fmt(net);$('rYou').textContent=fmt(tx.filter(t=>t.dir==='you').reduce((a,t)=>a+t.hours,0));$('rThem').textContent=fmt(tx.filter(t=>t.dir==='them').reduce((a,t)=>a+t.hours,0));
+$('reportPeople').innerHTML=people.map(p=>`<div class="row"><span class="name">${esc(p.name)}</span><span class="${(b[p.id]||0)>0?'pos':(b[p.id]||0)<0?'neg':''}">${fmt(b[p.id]||0)}</span></div>`).join('');
+['home','history','people','reports'].forEach(id=>$('n'+id).classList.toggle('selected',!$(id).classList.contains('hidden')))}
+
+function clearFilters(){if($('q'))$('q').value='';if($('from'))$('from').value='';if($('to'))$('to').value='';render()}
+function setThisYear(){let y=new Date().getFullYear();$('from').value=`${y}-01-01`;$('to').value=`${y}-12-31`;render()}
+
+function exportCSV(){let lines=[['Date','Firefighter','Station','Hours','Direction','Balance Effect','Notes']];tx.forEach(t=>{let p=people.find(x=>x.id===t.personId);lines.push([t.date,p?.name||'',t.station,t.hours,t.dir==='you'?'You worked':'They worked',t.dir==='you'?t.hours:-t.hours,t.notes||''])});let csv=lines.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(',')).join('\\n');download('pcos-ledger.csv','text/csv',csv)}
+function exportJSON(){download('pcos-ledger-backup.json','application/json',JSON.stringify({version:2,people,tx},null,2))}
+function download(name,type,data){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function importJSON(e){let file=e.target.files[0];if(!file)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.people)||!Array.isArray(x.tx))throw 0;people=x.people;tx=x.tx;persist();render();alert('Backup restored.')}catch{alert('That backup could not be read.')}};r.readAsText(file)}
+function resetDemo(){if(confirm('Replace current data with placeholder demo data?')){people=demo();tx=demoTx();persist();closeSettings();render()}}
+function openSettings(){$('settings').classList.remove('hidden')}function closeSettings(){$('settings').classList.add('hidden')}
+
+function showPerson(id){
+  let p=people.find(x=>x.id===id), b=balances()[id]||0;
+  let rows=tx.filter(t=>t.personId===id).sort((a,b)=>b.date.localeCompare(a.date));
+  $('detailTitle').textContent=p?.name||'Balance';
+  let running=0;
+  let chronological=[...rows].sort((a,b)=>a.date.localeCompare(b.date));
+  let rb={}; chronological.forEach(t=>{running += t.dir==='you'?t.hours:-t.hours; rb[t.id]=running});
+  $('detailBody').innerHTML=`<div class="balance" style="padding:8px 0 18px"><div class="eyebrow">CURRENT BALANCE</div><div class="big ${b>=0?'pos':'neg'}">${fmt(b)}</div><div class="secondary">${shift(b)}</div></div>
+  <div class="actions"><button class="settle" onclick="settle('${p.id}')">Settle balance</button><button class="accent" onclick="openTxFor('${p.id}')">＋ Add PCOS</button></div>
+  <div class="card"><div class="small muted">DEFAULT STATION</div><b>${esc(p?.station||'—')}</b></div>
+  <h3>PCOS history</h3>${rows.map(t=>`<div class="row"><div><div class="name">${esc(t.date)}</div><div class="small muted">${esc(t.station||'—')} · ${t.dir==='you'?'You worked':'They worked'} · ${t.hours} hrs</div><div class="small muted">${esc(t.notes||'')}</div></div><div style="text-align:right"><div class="${(t.dir==='you'?t.hours:-t.hours)>0?'pos':'neg'}">${fmt(t.dir==='you'?t.hours:-t.hours)}</div><div class="small muted">Balance ${fmt(rb[t.id])}</div><button class="small" onclick="openTx('${t.id}')">Edit</button></div></div>`).join('')||'<div class="empty">No records</div>'}`;
+  $('detail').classList.remove('hidden');
+}
+
+function openTxFor(personId){closeDetail();openTx();$('person').value=personId;let p=people.find(x=>x.id===personId);$('station').value=p?.station||''}
+function settle(personId){
+  let b=balances()[personId]||0;
+  if(!b)return alert('This balance is already zero.');
+  let p=people.find(x=>x.id===personId);
+  if(!confirm(`Settle ${p.name}'s balance of ${fmt(b)}?`))return;
+  tx.unshift({id:crypto.randomUUID(),personId,date:new Date().toISOString().slice(0,10),station:p.station||'',hours:Math.abs(b),dir:b>0?'them':'you',notes:'Balance settled'});
+  persist();showPerson(personId);render();
+}
+function updateHoursPreview(){
+  let h=parseFloat($('hours').value)||0;
+  $('hoursPreview').textContent=h?`${h} hours = ${Math.abs(h/24).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')} shift${h===24?'':'s'} of a 24-hour roster`:'';
+}
+
+function closeDetail(){$('detail').classList.add('hidden')}
+function toast(msg){let x=document.createElement('div');x.className='toast';x.textContent=msg;document.body.appendChild(x);setTimeout(()=>x.remove(),2600)}
+function installHelp(){ $('installHint').classList.toggle('hidden') }
+function populateYears(){
+  let years=[...new Set(tx.map(t=>t.date?.slice(0,4)).filter(Boolean))].sort().reverse();
+  let y=new Date().getFullYear().toString();if(!years.includes(y))years.unshift(y);
+  let s=$('reportYear');if(s){let cur=s.value||y;s.innerHTML=years.map(a=>`<option>${a}</option>`).join('');if(years.includes(cur))s.value=cur}
+}
+function renderReportYear(){
+  populateYears();let y=$('reportYear')?.value;
+  let data=tx.filter(t=>!y||t.date.startsWith(y));
+  let net=data.reduce((n,t)=>n+(t.dir==='you'?t.hours:-t.hours),0);
+  $('rCount').textContent=data.length;$('rNet').textContent=fmt(net);
+  $('rYou').textContent=fmt(data.filter(t=>t.dir==='you').reduce((a,t)=>a+t.hours,0));
+  $('rThem').textContent=fmt(data.filter(t=>t.dir==='them').reduce((a,t)=>a+t.hours,0));
+  if($('reportSubtitle'))$('reportSubtitle').textContent=`${y||'All years'} · ${data.length} recorded transaction${data.length===1?'':'s'}`;
+}
+if(window.navigator.standalone===false || /iPhone|iPad|iPod/.test(navigator.userAgent)) $('installHint').classList.remove('hidden');
+
+const originalRender=render;
+render=function(){originalRender();renderReportYear()}
+
+render();
+</script>
+</body></html>
