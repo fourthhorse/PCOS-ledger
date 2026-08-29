@@ -147,7 +147,8 @@ if(id){let t=tx.find(x=>x.id===id);$('person').value=t.personId;$('date').value=
 function openPerson(){editing=null;$('modalTitle').textContent='Add firefighter';$('txForm').classList.add('hidden');$('personForm').classList.remove('hidden');$('pname').value='';$('pstation').value='';$('modal').classList.remove('hidden')}
 function closeModal(){$('modal').classList.add('hidden')}
 function setDir(x){dir=x;$('youBtn').classList.toggle('selected',x==='you');$('themBtn').classList.toggle('selected',x==='them')}
-function setHours(h){$('hours').value=h;updateHoursPreview()}\nfunction focusCustomHours(){$("hours").focus();$("hours").select()}
+function setHours(h){$('hours').value=h;updateHoursPreview()}
+function focusCustomHours(){$("hours").focus();$("hours").select()}
 function savePerson(){let n=$('pname').value.trim();if(!n)return alert('Enter a name.');people.push({id:crypto.randomUUID(),name:n,station:$('pstation').value.trim()});persist();closeModal();render()}
 function saveTx(){let p=people.find(x=>x.id===$('person').value),h=parseFloat($('hours').value);if(!p||!h||h<=0)return alert('Enter valid details.');let obj={personId:p.id,date:$('date').value,station:$('station').value.trim(),hours:h,dir,notes:$('notes').value.trim()};if(editing){Object.assign(tx.find(x=>x.id===editing),obj)}else{tx.unshift({id:crypto.randomUUID(),...obj})}persist();closeModal();render()}
 function delTx(id){if(confirm('Delete this PCOS record?')){tx=tx.filter(t=>t.id!==id);persist();render()}}
