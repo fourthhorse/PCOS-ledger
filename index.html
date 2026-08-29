@@ -106,15 +106,20 @@ label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{widt
 <button onclick="setHours(6)">¼ shift<br><span class="small">6h</span></button>
 </div></details>
 <label>Notes</label><textarea id="notes" placeholder="Optional"></textarea>
+<button style="width:100%;margin-top:10px" onclick="messageFromTx()">💬 Text firefighter</button>
 <div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveTx()">Save</button></div>
 </div>
 <div id="personForm" class="hidden">
 <label>Name</label><input id="pname" placeholder="e.g. Alex Morgan">
+<label>Contact details</label>
+<div style="display:flex;gap:8px"><input id="pphone" type="tel" placeholder="Mobile number" style="flex:1"><button class="accent" onclick="pickContact('new')">Contacts</button></div>
 <label>Default station</label><input id="pstation" placeholder="e.g. Burwood">
 <div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="savePerson()">Save</button></div>
 </div>
 <div id="editPersonForm" class="hidden">
 <label>Name</label><input id="epname" placeholder="e.g. Alex Morgan">
+<label>Contact details</label>
+<div style="display:flex;gap:8px"><input id="epphone" type="tel" placeholder="Mobile number" style="flex:1"><button class="accent" onclick="pickContact('edit')">Contacts</button></div>
 <label>Default station</label><input id="epstation" placeholder="e.g. Burwood">
 <div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="saveEditedPerson()">Save changes</button></div>
 </div>
@@ -127,7 +132,7 @@ label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{widt
 </div></div>
 <div id="settings" class="modal hidden"><div class="sheet">
 <div style="display:flex;justify-content:space-between"><h2>Settings</h2><button onclick="closeSettings()">✕</button></div>
-<p class="muted">Version 7 prototype. New firefighters can be added directly from Add PCOS and firefighter details can be edited from People. Full 24-hour shift is the primary entry; custom hours is the second option. Balances are calculated from transaction history; settlement creates a normal historical transaction. Data is stored locally in this browser.</p>
+<p class="muted">Version 8 prototype. Firefighter records now support mobile contact details, optional iOS/browser contact picking where supported, and SMS initiation from PCOS entry. New firefighters can be added directly from Add PCOS and firefighter details can be edited from People. Full 24-hour shift is the primary entry; custom hours is the second option. Balances are calculated from transaction history; settlement creates a normal historical transaction. Data is stored locally in this browser.</p>
 <button class="danger" style="width:100%" onclick="resetDemo()">Reset to placeholder data</button>
 </div></div>
 <div class="footer">PCOS Ledger V2 · local prototype</div>
@@ -138,7 +143,7 @@ const KEY1='pcos_v2_people',KEY2='pcos_v2_tx';
 let people=JSON.parse(localStorage.getItem(KEY1)||'null');
 let tx=JSON.parse(localStorage.getItem(KEY2)||'null');
 let editing=null,dir='you',addingPersonFromTx=false;
-function demo(){return [{id:'p1',name:'Alex Morgan',station:'Burwood'},{id:'p2',name:'Taylor Smith',station:'Drummoyne'},{id:'p3',name:'Jordan Lee',station:'Burwood'},{id:'p4',name:'Casey Brown',station:'Redfern'}]}
+function demo(){return [{id:'p1',name:'Alex Morgan',station:'Burwood',phone:'0400 000 001'},{id:'p2',name:'Taylor Smith',station:'Drummoyne',phone:'0400 000 002'},{id:'p3',name:'Jordan Lee',station:'Burwood',phone:'0400 000 003'},{id:'p4',name:'Casey Brown',station:'Redfern',phone:'0400 000 004'}]}
 function demoTx(){return [
 {id:'t1',personId:'p1',date:'2026-08-28',station:'Burwood',hours:24,dir:'you',notes:'Example PCOS'},
 {id:'t2',personId:'p1',date:'2026-08-14',station:'Burwood',hours:12,dir:'them',notes:'Example PCOS'},
@@ -150,7 +155,7 @@ function persist(){localStorage.setItem(KEY1,JSON.stringify(people));localStorag
 function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');render();scrollTo(0,0)}
 function openTx(id=null){if(!people.length)return alert('Add a firefighter first.');editing=id; $('modalTitle').textContent=id?'Edit PCOS':'Add PCOS';$('txForm').classList.remove('hidden');$('personForm').classList.add('hidden');$('editPersonForm').classList.add('hidden');let s=$('person');s.innerHTML=people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
 if(id){let t=tx.find(x=>x.id===id);$('person').value=t.personId;$('date').value=t.date;$('station').value=t.station;$('hours').value=t.hours;$('notes').value=t.notes||'';setDir(t.dir);updateHoursPreview()}else{$('date').value=new Date().toISOString().slice(0,10);$('station').value=people[0]?.station||'';$('hours').value=24;$('notes').value='';setDir('you');updateHoursPreview()}$('modal').classList.remove('hidden')}
-function openPerson(){addingPersonFromTx=false;editing=null;$('modalTitle').textContent='Add firefighter';$('txForm').classList.add('hidden');$('personForm').classList.remove('hidden');$('editPersonForm').classList.add('hidden');$('pname').value='';$('pstation').value='';$('modal').classList.remove('hidden')}
+function openPerson(){addingPersonFromTx=false;editing=null;$('modalTitle').textContent='Add firefighter';$('txForm').classList.add('hidden');$('personForm').classList.remove('hidden');$('editPersonForm').classList.add('hidden');$('pname').value='';$('pstation').value='';$('pphone').value='';$('modal').classList.remove('hidden')}
 function closeModal(){$('modal').classList.add('hidden')}
 function setDir(x){dir=x;$('youBtn').classList.toggle('selected',x==='you');$('themBtn').classList.toggle('selected',x==='them')}
 function setHours(h){$('hours').value=h;updateHoursPreview()}
@@ -160,7 +165,7 @@ function addPersonFromTx(){
   addingPersonFromTx=true;editing=null;
   $('modalTitle').textContent='New firefighter';
   $('txForm').classList.add('hidden');$('personForm').classList.remove('hidden');$('editPersonForm').classList.add('hidden');
-  $('pname').value='';$('pstation').value='';$('modal').classList.remove('hidden');$('pname').focus();
+  $('pname').value='';$('pstation').value='';$('pphone').value='';$('modal').classList.remove('hidden');$('pname').focus();
 }
 function personChanged(){
   let p=people.find(x=>x.id===$('person').value);
@@ -171,17 +176,47 @@ function editPerson(id){
   editing=id;addingPersonFromTx=false;
   $('modalTitle').textContent='Edit firefighter';
   $('txForm').classList.add('hidden');$('personForm').classList.add('hidden');$('editPersonForm').classList.remove('hidden');
-  $('epname').value=p.name;$('epstation').value=p.station||'';$('modal').classList.remove('hidden');
+  $('epname').value=p.name;$('epstation').value=p.station||'';$('epphone').value=p.phone||'';$('modal').classList.remove('hidden');
 }
 function saveEditedPerson(){
   let p=people.find(x=>x.id===editing),n=$('epname').value.trim();
   if(!p||!n)return alert('Enter a name.');
-  p.name=n;p.station=$('epstation').value.trim();persist();closeModal();render();
+  p.name=n;p.station=$('epstation').value.trim();p.phone=$('epphone').value.trim();persist();closeModal();render();
+}
+
+
+async function pickContact(mode){
+  if(!('contacts' in navigator) || !navigator.contacts.select){
+    alert('Your current iPhone browser does not expose Contacts to this web app. You can enter the mobile number manually.');
+    return;
+  }
+  try{
+    let c=await navigator.contacts.select(['name','tel'],{multiple:false});
+    if(!c.length)return;
+    let name=Array.isArray(c[0].name)?c[0].name[0]:(c[0].name||'');
+    let tel=Array.isArray(c[0].tel)?c[0].tel[0]:(c[0].tel||'');
+    if(mode==='new'){
+      $('pname').value=name;$('pphone').value=tel;
+    }else{
+      $('epname').value=name;$('epphone').value=tel;
+    }
+  }catch(e){}
+}
+function messagePerson(id){
+  let p=people.find(x=>x.id===id);if(!p?.phone)return alert('No mobile number saved for this firefighter.');
+  let msg=prompt('Optional message to '+p.name+':','PCOS Ledger: regarding our part change of shift.');
+  if(msg===null)return;
+  window.location.href='sms:'+p.phone.replace(/[^0-9+]/g,'')+'?body='+encodeURIComponent(msg);
+}
+function messageFromTx(){
+  let p=people.find(x=>x.id===$('person').value);if(!p?.phone)return alert('No mobile number saved for this firefighter. Add one in People.');
+  let msg='PCOS: '+($('date').value||'')+' · '+($('station').value||'')+' · '+$('hours').value+' hours';
+  window.location.href='sms:'+p.phone.replace(/[^0-9+]/g,'')+'?body='+encodeURIComponent(msg);
 }
 
 function savePerson(){
   let n=$('pname').value.trim();if(!n)return alert('Enter a name.');
-  let np={id:crypto.randomUUID(),name:n,station:$('pstation').value.trim()};people.push(np);persist();
+  let np={id:crypto.randomUUID(),name:n,station:$('pstation').value.trim(),phone:$('pphone').value.trim()};people.push(np);persist();
   if(addingPersonFromTx){addingPersonFromTx=false;closeModal();openTx();$('person').value=np.id;$('station').value=np.station||'';updateHoursPreview();}
   else{closeModal();render()}
 }
@@ -198,7 +233,7 @@ $('net').textContent=fmt(net);$('netShift').textContent=shift(net);$('owed').tex
 $('outstanding').innerHTML=people.map(p=>({p,h:b[p.id]||0})).filter(x=>x.h!==0).sort((a,z)=>z.h-a.h).map(x=>`<div class="row balanceTap" onclick="showPerson('${x.p.id}')"><div><div class="name">${esc(x.p.name)}</div><div class="small muted">${esc(x.p.station)}</div></div><div class="${x.h>0?'pos':'neg'}">${fmt(x.h)}<div class="small">${shift(x.h)}</div></div></div>`).join('')||'<div class="empty">No outstanding balances</div>';
 $('recent').innerHTML=tx.slice(0,6).map(item).join('')||'<div class="empty">No PCOS recorded</div>';
 let q=($('q')?.value||'').toLowerCase(),f=$('from')?.value||'',to=$('to')?.value||'';let list=tx.filter(t=>{let p=people.find(x=>x.id===t.personId);return (!q||`${p?.name} ${t.station} ${t.notes}`.toLowerCase().includes(q))&&(!f||t.date>=f)&&(!to||t.date<=to)});$('historyList').innerHTML=list.map(item).join('')||'<div class="empty">No matching records</div>';
-$('peopleList').innerHTML=people.map(p=>{let h=b[p.id]||0;return `<div class="row"><div><div class="name">${esc(p.name)}</div><div class="small muted">${esc(p.station)}</div></div><div style="text-align:right"><div class="${h>0?'pos':h<0?'neg':''}">${fmt(h)}</div><button class="small" onclick="editPerson('${p.id}')">Edit</button> <button class="small danger" onclick="delPerson('${p.id}')">Delete</button></div></div>`}).join('')||'<div class="empty">No firefighters</div>';
+$('peopleList').innerHTML=people.map(p=>{let h=b[p.id]||0;return `<div class="row"><div><div class="name">${esc(p.name)}</div><div class="small muted">${esc(p.station)}${p.phone?' · '+esc(p.phone):''}</div></div><div style="text-align:right"><div class="${h>0?'pos':h<0?'neg':''}">${fmt(h)}</div><button class="small" onclick="editPerson('${p.id}')">Edit</button> <button class="small danger" onclick="delPerson('${p.id}')">Delete</button></div></div>`}).join('')||'<div class="empty">No firefighters</div>';
 $('rCount').textContent=tx.length;$('rNet').textContent=fmt(net);$('rYou').textContent=fmt(tx.filter(t=>t.dir==='you').reduce((a,t)=>a+t.hours,0));$('rThem').textContent=fmt(tx.filter(t=>t.dir==='them').reduce((a,t)=>a+t.hours,0));
 $('reportPeople').innerHTML=people.map(p=>`<div class="row"><span class="name">${esc(p.name)}</span><span class="${(b[p.id]||0)>0?'pos':(b[p.id]||0)<0?'neg':''}">${fmt(b[p.id]||0)}</span></div>`).join('');
 ['home','history','people','reports'].forEach(id=>$('n'+id).classList.toggle('selected',!$(id).classList.contains('hidden')))}
@@ -222,7 +257,8 @@ function showPerson(id){
   let rb={}; chronological.forEach(t=>{running += t.dir==='you'?t.hours:-t.hours; rb[t.id]=running});
   $('detailBody').innerHTML=`<div class="balance" style="padding:8px 0 18px"><div class="eyebrow">CURRENT BALANCE</div><div class="big ${b>=0?'pos':'neg'}">${fmt(b)}</div><div class="secondary">${shift(b)}</div></div>
   <div class="actions"><button class="settle" onclick="settle('${p.id}')">Settle balance</button><button class="accent" onclick="openTxFor('${p.id}')">＋ Add PCOS</button></div>
-  <div class="card"><div class="small muted">DEFAULT STATION</div><b>${esc(p?.station||'—')}</b></div>
+${p.phone?`<button style="width:100%;margin-top:8px" onclick="messagePerson('${p.id}')">💬 Text ${esc(p.name)}</button>`:''}
+  <div class="card"><div class="small muted">DEFAULT STATION</div><b>${esc(p?.station||'—')}</b>${p?.phone?`<div class="small muted" style="margin-top:5px">Mobile: ${esc(p.phone)}</div>`:''}</div>
   <h3>PCOS history</h3>${rows.map(t=>`<div class="row"><div><div class="name">${esc(t.date)}</div><div class="small muted">${esc(t.station||'—')} · ${t.dir==='you'?'You worked':'They worked'} · ${t.hours} hrs</div><div class="small muted">${esc(t.notes||'')}</div></div><div style="text-align:right"><div class="${(t.dir==='you'?t.hours:-t.hours)>0?'pos':'neg'}">${fmt(t.dir==='you'?t.hours:-t.hours)}</div><div class="small muted">Balance ${fmt(rb[t.id])}</div><button class="small" onclick="openTx('${t.id}')">Edit</button></div></div>`).join('')||'<div class="empty">No records</div>'}`;
   $('detail').classList.remove('hidden');
 }
