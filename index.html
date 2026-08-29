@@ -38,7 +38,7 @@ label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{widt
 .toast{position:fixed;left:16px;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));background:#111;color:#fff;padding:13px 16px;border-radius:14px;z-index:20;text-align:center;box-shadow:0 4px 18px #0004}
 .balanceTap{cursor:pointer}
 <style>
-.searchPanel{position:fixed;inset:0;background:#f5f5f7;z-index:9999;padding:calc(16px + env(safe-area-inset-top)) 16px 24px;overflow:auto}
+.searchPanel{position:fixed;inset:0;width:100%;height:100%;box-sizing:border-box;background:#f5f5f7;z-index:10000;padding:calc(16px + env(safe-area-inset-top)) 16px 24px;overflow:auto}
 .searchPanel .top{display:flex;gap:8px;align-items:center;position:sticky;top:0;background:#f5f5f7;padding-bottom:12px}
 .searchPanel input{margin:0}
 .searchResult{padding:14px 8px;border-bottom:1px solid #ddd;cursor:pointer}
@@ -48,13 +48,10 @@ label{display:block;font-weight:650;margin:13px 0 6px}input,select,textarea{widt
 .statCard{padding:14px;border-radius:14px;background:#f1f1f3}
 .searchPanel{box-sizing:border-box;width:100vw;height:100dvh;padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:calc(20px + env(safe-area-inset-bottom))}.searchPanel .top{z-index:2}.searchResult{min-height:54px;box-sizing:border-box}
 <style>
-/* V12 debug/refinement: scoped, non-destructive */
-body{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
-.appNav{position:fixed;left:0;right:0;bottom:0;z-index:40;margin:0;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #ddd;display:flex;gap:4px;box-shadow:0 -2px 12px #0001}
-.appNav button{flex:1;min-height:44px;padding:8px 4px;font-size:12px}
-.v12stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.v12stat{padding:12px;border-radius:14px;background:#f1f1f3}
-.v12stat .value{font-size:20px;font-weight:700;margin-top:4px}
+/* V12 fixed: scoped refinements only */
+.app .actions button{min-height:44px}
+.app .inputLike{min-height:44px}
+.app .searchResult{min-height:52px}
 </style></style></style>
 </head>
 <body>
@@ -62,7 +59,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
 <header><div><h1>PCOS Ledger</h1><div class="sub">Part Change of Shift tracker</div></div><button onclick="openSettings()">⚙︎</button></header>
 
 <div id="installHint" class="install hidden">Tip: in Safari, use Share → Add to Home Screen to install PCOS Ledger.</div>
-<nav class="appNav" class="appNav">
+<nav>
 <button onclick="show('home')" id="nhome">Balance</button>
 <button onclick="show('history')" id="nhistory">PCOS</button>
 <button onclick="show('people')" id="npeople">People</button>
@@ -70,10 +67,6 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
 </nav>
 
 <section id="home" class="page">
-<div class="v12stats">
-<div class="v12stat"><div class="small muted">THEY OWE ME</div><div id="dashOweMe" class="value pos">0 hrs</div></div>
-<div class="v12stat"><div class="small muted">I OWE THEM</div><div id="dashIOwe" class="value neg">0 hrs</div></div>
-</div>
 <div class="card balance"><div class="eyebrow">MY NET BALANCE</div><div id="net" class="big">0 hrs</div><div id="netShift" class="secondary">0 shifts</div></div>
 <div class="grid2">
 <div class="stat"><div class="muted small">THEY OWE ME</div><b id="owed">0 hrs</b></div>
@@ -163,7 +156,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom))}
 </div></div>
 <div id="settings" class="modal hidden"><div class="sheet">
 <div style="display:flex;justify-content:space-between"><h2>Settings</h2><button onclick="closeSettings()">✕</button></div>
-<p class="muted">Version 9 prototype. Firefighter records include service number and FRNSW station selection; station numbers are sourced from the current FRNSW Station Index. Firefighter records now support mobile contact details, optional iOS/browser contact picking where supported, and SMS initiation from PCOS entry. New firefighters can be added directly from Add PCOS and firefighter details can be edited from People. Full 24-hour shift is the primary entry; custom hours is the second option. Balances are calculated from transaction history; settlement creates a normal historical transaction. Data is stored locally in this browser.</p>
+<p class="muted">Version 12 fixed. V11 layout retained; searchable station picker layering fixed; no navigation/layout overlay changes. Firefighter records include service number and FRNSW station selection; station numbers are sourced from the current FRNSW Station Index. Firefighter records now support mobile contact details, optional iOS/browser contact picking where supported, and SMS initiation from PCOS entry. New firefighters can be added directly from Add PCOS and firefighter details can be edited from People. Full 24-hour shift is the primary entry; custom hours is the second option. Balances are calculated from transaction history; settlement creates a normal historical transaction. Data is stored locally in this browser.</p>
 <button class="danger" style="width:100%" onclick="resetDemo()">Reset to placeholder data</button>
 </div></div>
 <div class="footer">PCOS Ledger V2 · local prototype</div>
@@ -411,12 +404,6 @@ function fmt(h){let sign=h>0?'+':h<0?'−':'';let a=Math.abs(h);let s=a/24;let h
 function shift(h){let s=h/24;return `${s>0?'+':s<0?'−':''}${Math.abs(s).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')} shifts`}
 function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function item(t){let p=people.find(x=>x.id===t.personId),v=t.dir==='you'?t.hours:-t.hours;return `<div class="row"><div><div class="name">${esc(p?.name||'Unknown')}</div><div class="small muted">${esc(stationName(t.station)||t.station||'—')} · ${esc(t.date)}</div><div class="small muted">${t.dir==='you'?'You worked':'They worked'} · ${t.hours} hrs${t.notes?' · '+esc(t.notes):''}</div></div><div style="text-align:right"><div class="${v>0?'pos':'neg'}">${fmt(v)}</div><div class="small muted">${shift(v)}</div><div style="margin-top:5px"><button class="small" onclick="openTx('${t.id}')">Edit</button> <button class="small danger" onclick="delTx('${t.id}')">Delete</button></div></div></div>`}
-function updateDashboardStats(){
-  let oweMe=tx.filter(t=>t.dir==='you').reduce((a,t)=>a+t.hours,0);
-  let iOwe=tx.filter(t=>t.dir==='them').reduce((a,t)=>a+t.hours,0);
-  if($('dashOweMe'))$('dashOweMe').textContent=fmt(oweMe);
-  if($('dashIOwe'))$('dashIOwe').textContent=fmt(iOwe);
-}
 function render(){let b=balances(),net=tx.reduce((n,t)=>n+(t.dir==='you'?t.hours:-t.hours),0),owed=Object.values(b).filter(x=>x>0).reduce((a,x)=>a+x,0),owe=-Object.values(b).filter(x=>x<0).reduce((a,x)=>a+x,0);
 $('net').textContent=fmt(net);$('netShift').textContent=shift(net);$('owed').textContent=fmt(owed);$('owe').textContent=fmt(owe);
 $('outstanding').innerHTML=people.map(p=>({p,h:b[p.id]||0})).filter(x=>x.h!==0).sort((a,z)=>z.h-a.h).map(x=>`<div class="row balanceTap" onclick="showPerson('${x.p.id}')"><div><div class="name">${esc(x.p.name)}</div><div class="small muted">${esc(x.p.station)}</div></div><div class="${x.h>0?'pos':'neg'}">${fmt(x.h)}<div class="small">${shift(x.h)}</div></div></div>`).join('')||'<div class="empty">No outstanding balances</div>';
@@ -494,7 +481,7 @@ function renderReportYear(){
 if(window.navigator.standalone===false || /iPhone|iPad|iPod/.test(navigator.userAgent)) $('installHint').classList.remove('hidden');
 
 const originalRender=render;
-render=function(){originalRender();renderReportYear();updateDashboardStats()}
+render=function(){originalRender();renderReportYear()}
 
 render();
 document.addEventListener('input',e=>{if(e.target.id==='pickerSearch'){if(pickerMode==='person')renderPersonResults();else renderStationResults()}});
